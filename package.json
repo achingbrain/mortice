@@ -1,0 +1,44 @@
+{
+  "name": "mortice",
+  "version": "0.0.1",
+  "description": "Isomorphic read/write lock that works in single processes, node clusters and web workers",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "ava",
+    "lint": "standard"
+  },
+  "keywords": [
+    "read-write",
+    "cluster",
+    "mutex",
+    "lock",
+    "await",
+    "async"
+  ],
+  "author": "Alex Potsides <alex@achingbrain.net>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/achingbrain/mortice.git"
+  },
+  "bugs": {
+    "url": "https://github.com/achingbrain/mortice/issues"
+  },
+  "homepage": "https://github.com/achingbrain/mortice",
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "execa": "^0.10.0",
+    "standard": "^11.0.1"
+  },
+  "ava": {
+    "files": [
+      "test/*.test.js"
+    ],
+    "concurrency": 1
+  },
+  "dependencies": {
+    "p-queue": "^2.4.2",
+    "promise-timeout": "^1.3.0",
+    "shortid": "^2.2.8"
+  }
+}
