@@ -1,8 +1,8 @@
-const lock = require('../../')
+const mortice = require('../../')
 
-const mutext = lock()
+const mutex = mortice()
 
-mutext.writeLock(() => {
+mutex.writeLock(() => {
   return new Promise((resolve, reject) => {
     console.info('write 1')
 
@@ -10,7 +10,7 @@ mutext.writeLock(() => {
   })
 })
 
-mutext.readLock(() => {
+mutex.readLock(() => {
   return new Promise((resolve, reject) => {
     console.info('read 1')
 
@@ -18,7 +18,7 @@ mutext.readLock(() => {
   })
 })
 
-mutext.readLock(() => {
+mutex.readLock(() => {
   return new Promise((resolve, reject) => {
     console.info('read 2')
 
@@ -26,7 +26,7 @@ mutext.readLock(() => {
   })
 })
 
-mutext.readLock(() => {
+mutex.readLock(() => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       console.info('read 3')
@@ -36,7 +36,7 @@ mutext.readLock(() => {
   })
 })
 
-mutext.writeLock(() => {
+mutex.writeLock(() => {
   return new Promise((resolve, reject) => {
     console.info('write 2')
 
@@ -44,7 +44,7 @@ mutext.writeLock(() => {
   })
 })
 
-mutext.readLock(() => {
+mutex.readLock(() => {
   return new Promise((resolve, reject) => {
     console.info('read 4')
 
