@@ -88,3 +88,15 @@ mutex.requestWrite(() => {
   // return a promise
 })
 ```
+
+Alternatively you can use the bundled `mortice.Worker` to create web workers and save yourself an extra dependency.
+
+```javascript
+const mortice = require('mortice')
+const Worker = mortice.Worker
+
+// create our lock on the main thread, it will be held here
+const mutex = mortice()
+
+const worker = new Worker('worker.js')
+```
