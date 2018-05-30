@@ -9,6 +9,7 @@ mutex.writeLock(() => {
     resolve()
   })
 })
+.then(() => {})
 
 mutex.readLock(() => {
   return new Promise((resolve, reject) => {
@@ -17,6 +18,7 @@ mutex.readLock(() => {
     resolve()
   })
 })
+.then(() => {})
 
 mutex.readLock(() => {
   return new Promise((resolve, reject) => {

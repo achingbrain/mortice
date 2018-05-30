@@ -15,6 +15,7 @@ module.exports = (self) => {
       resolve()
     })
   })
+  .then(() => {})
 
   mutex.readLock(() => {
     return new Promise((resolve, reject) => {
@@ -26,6 +27,7 @@ module.exports = (self) => {
       resolve()
     })
   })
+  .then(() => {})
 
   mutex.readLock(() => {
     return new Promise((resolve, reject) => {

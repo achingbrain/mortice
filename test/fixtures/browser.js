@@ -1,23 +1,59 @@
-const work = require('webworkify')
 const mortice = require('../../')
-mortice()
 
-const observe = require('observable-webworkers')
+const mutex = mortice()
 
-const worker = work(require('./worker.js'))
+mutex.writeLock(() => {
+  return new Promise((resolve, reject) => {
+    console.info('write 1')
 
-observe(worker)
+    resolve()
+  })
+})
+.then(() => {})
 
-observe.addEventListener('message', (worker, event) => {
-  if (event.data) {
-    if (event.data.type === 'log') {
-      console.info(event.data.message)
-    }
+mutex.readLock(() => {
+  return new Promise((resolve, reject) => {
+    console.info('read 1')
 
-    if (event.data.type === 'done') {
-      worker.terminate()
+    resolve()
+  })
+})
+.then(() => {})
 
-      return global.__close__()
-    }
-  }
+mutex.readLock(() => {
+  return new Promise((resolve, reject) => {
+    console.info('read 2')
+
+    resolve()
+  })
+})
+
+mutex.readLock(() => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      console.info('read 3')
+
+      resolve()
+    }, 500)
+  })
+})
+
+mutex.writeLock(() => {
+  return new Promise((resolve, reject) => {
+    console.info('write 2')
+
+    resolve()
+  })
+})
+
+mutex.readLock(() => {
+  return new Promise((resolve, reject) => {
+    console.info('read 4')
+
+    resolve()
+  })
+})
+.catch(() => {})
+.then(() => {
+  __close__()
 })
