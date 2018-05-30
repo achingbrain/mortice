@@ -19,7 +19,7 @@ if (cluster.isMaster) {
       resolve()
     })
   })
-  .then(() => {})
+    .then(() => {})
 
   mutex.readLock(() => {
     return new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ if (cluster.isMaster) {
       resolve()
     })
   })
-  .then(() => {})
+    .then(() => {})
 
   mutex.readLock(() => {
     return new Promise((resolve, reject) => {
