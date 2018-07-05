@@ -1,7 +1,9 @@
 const cluster = require('cluster')
 const mortice = require('../../')
 
-const mutex = mortice()
+const mutex = mortice({
+  singleProcess: true
+})
 
 if (cluster.isMaster) {
   cluster.on('message', (worker, message) => {

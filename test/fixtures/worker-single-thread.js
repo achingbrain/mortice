@@ -1,20 +1,17 @@
-const cluster = require('cluster')
 const mortice = require('../../')
 
-const mutex = mortice()
-
-if (cluster.isMaster) {
-  cluster.on('message', (worker, message) => {
-    if (message === 'done') {
-      worker.kill()
-    }
+module.exports = (self) => {
+  const mutex = mortice({
+    global: self,
+    singleProcess: true
   })
 
-  cluster.fork()
-} else {
   mutex.writeLock(() => {
     return new Promise((resolve) => {
-      console.info('write 1')
+      self.postMessage({
+        type: 'log',
+        message: 'write 1'
+      })
 
       resolve()
     })
@@ -23,7 +20,10 @@ if (cluster.isMaster) {
 
   mutex.readLock(() => {
     return new Promise((resolve) => {
-      console.info('read 1')
+      self.postMessage({
+        type: 'log',
+        message: 'read 1'
+      })
 
       resolve()
     })
@@ -32,7 +32,10 @@ if (cluster.isMaster) {
 
   mutex.readLock(() => {
     return new Promise((resolve) => {
-      console.info('read 2')
+      self.postMessage({
+        type: 'log',
+        message: 'read 2'
+      })
 
       resolve()
     })
@@ -41,7 +44,10 @@ if (cluster.isMaster) {
   mutex.readLock(() => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        console.info('read 3')
+        self.postMessage({
+          type: 'log',
+          message: 'read 3'
+        })
 
         resolve()
       }, 500)
@@ -50,7 +56,10 @@ if (cluster.isMaster) {
 
   mutex.writeLock(() => {
     return new Promise((resolve) => {
-      console.info('write 2')
+      self.postMessage({
+        type: 'log',
+        message: 'write 2'
+      })
 
       resolve()
     })
@@ -58,11 +67,16 @@ if (cluster.isMaster) {
 
   mutex.readLock(() => {
     return new Promise((resolve) => {
-      console.info('read 4')
+      self.postMessage({
+        type: 'log',
+        message: 'read 4'
+      })
+
+      self.postMessage({
+        type: 'done'
+      })
 
       resolve()
-
-      process.send('done')
     })
   })
 }

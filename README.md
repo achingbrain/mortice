@@ -26,9 +26,19 @@ const delay = require('delay')
 
 // the lock name & options objects are both optional
 const mutex = mortice('my-lock', {
-  timeout: 30000, // how long before promises time out (default: 24 hours)
-  concurrency: 5, // control how many read operations are executed concurrently (default: Infinity),
-  global: window // the global object (for use with webworkify and similar) (default: global)
+
+  // how long before write locks time out (default: 24 hours)
+  timeout: 30000,
+
+   // control how many read operations are executed concurrently (default: Infinity)
+  concurrency: 5,
+
+  // the global object (for use with webworkify and similar) (default: global)
+  global: window,
+
+  // by default the the lock will be held on the main thread, set this to true if the
+  // a lock should reside on each worker (default: false)
+  singleProcess: false
 })
 
 mutex.requestRead(() => {

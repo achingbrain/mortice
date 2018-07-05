@@ -6,7 +6,7 @@ module.exports = (self) => {
   })
 
   mutex.writeLock(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       self.postMessage({
         type: 'log',
         message: 'write 1'
@@ -18,7 +18,7 @@ module.exports = (self) => {
     .then(() => {})
 
   mutex.readLock(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       self.postMessage({
         type: 'log',
         message: 'read 1'
@@ -30,7 +30,7 @@ module.exports = (self) => {
     .then(() => {})
 
   mutex.readLock(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       self.postMessage({
         type: 'log',
         message: 'read 2'
@@ -41,7 +41,7 @@ module.exports = (self) => {
   })
 
   mutex.readLock(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         self.postMessage({
           type: 'log',
@@ -54,7 +54,7 @@ module.exports = (self) => {
   })
 
   mutex.writeLock(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       self.postMessage({
         type: 'log',
         message: 'write 2'
@@ -65,7 +65,7 @@ module.exports = (self) => {
   })
 
   mutex.readLock(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       self.postMessage({
         type: 'log',
         message: 'read 4'
