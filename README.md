@@ -41,19 +41,19 @@ const mutex = mortice('my-lock', {
   singleProcess: false
 })
 
-mutex.requestRead(() => {
+mutex.readLock(() => {
   return Promise.resolve().then(() => console.info('read 1'))
 })
 
-mutex.requestRead(() => {
+mutex.readLock(() => {
   return Promise.resolve().then(() => console.info('read 2'))
 })
 
-mutex.requestWrite(() => {
+mutex.writeLock(() => {
   return delay(200).then(() => console.info('write 1'))
 })
 
-mutex.requestRead(() => {
+mutex.readLock(() => {
   return Promise.resolve().then(() => console.info('read 3'))
 })
 ```
@@ -90,11 +90,11 @@ const delay = require('delay')
 
 const mutex = mortice()
 
-mutex.requestRead(() => {
+mutex.readLock(() => {
   // return a promise
 })
 
-mutex.requestWrite(() => {
+mutex.writeLock(() => {
   // return a promise
 })
 ```
