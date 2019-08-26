@@ -33,9 +33,6 @@ const mutex = mortice('my-lock', {
    // control how many read operations are executed concurrently (default: Infinity)
   concurrency: 5,
 
-  // the global object (for use with webworkify and similar) (default: global)
-  global: window,
-
   // by default the the lock will be held on the main thread, set this to true if the
   // a lock should reside on each worker (default: false)
   singleProcess: false

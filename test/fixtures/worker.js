@@ -1,9 +1,7 @@
 const mortice = require('../../')
 
 module.exports = (self) => {
-  const mutex = mortice({
-    global: self
-  })
+  const mutex = mortice()
 
   mutex.writeLock(() => {
     return new Promise((resolve) => {

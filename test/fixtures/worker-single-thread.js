@@ -2,7 +2,6 @@ const mortice = require('../../')
 
 module.exports = (self) => {
   const mutex = mortice({
-    global: self,
     singleProcess: true
   })
 
