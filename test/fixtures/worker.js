@@ -1,81 +1,52 @@
 const mortice = require('../../')
+const globalThis = require('globalthis')()
+
+async function read (muxex, index, timeout = 0) {
+  const release = await muxex.readLock()
+  await new Promise((resolve) => {
+    globalThis.postMessage({
+      type: 'log',
+      message: `read ${index}`
+    })
+
+    setTimeout(() => {
+      resolve()
+
+      if (index === 4) {
+        globalThis.postMessage({
+          type: 'done'
+        })
+      }
+    }, timeout)
+  })
+
+  release()
+}
+
+async function write (muxex, index, timeout = 0) {
+  const release = await muxex.writeLock()
+
+  await new Promise((resolve) => {
+    globalThis.postMessage({
+      type: 'log',
+      message: `write ${index}`
+    })
+
+    setTimeout(() => {
+      resolve()
+    }, timeout)
+  })
+
+  release()
+}
 
 module.exports = (self) => {
-  const mutex = mortice({
-    global: self
-  })
+  const mutex = mortice()
 
-  mutex.writeLock(() => {
-    return new Promise((resolve) => {
-      self.postMessage({
-        type: 'log',
-        message: 'write 1'
-      })
-
-      resolve()
-    })
-  })
-    .then(() => {})
-
-  mutex.readLock(() => {
-    return new Promise((resolve) => {
-      self.postMessage({
-        type: 'log',
-        message: 'read 1'
-      })
-
-      resolve()
-    })
-  })
-    .then(() => {})
-
-  mutex.readLock(() => {
-    return new Promise((resolve) => {
-      self.postMessage({
-        type: 'log',
-        message: 'read 2'
-      })
-
-      resolve()
-    })
-  })
-
-  mutex.readLock(() => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        self.postMessage({
-          type: 'log',
-          message: 'read 3'
-        })
-
-        resolve()
-      }, 500)
-    })
-  })
-
-  mutex.writeLock(() => {
-    return new Promise((resolve) => {
-      self.postMessage({
-        type: 'log',
-        message: 'write 2'
-      })
-
-      resolve()
-    })
-  })
-
-  mutex.readLock(() => {
-    return new Promise((resolve) => {
-      self.postMessage({
-        type: 'log',
-        message: 'read 4'
-      })
-
-      self.postMessage({
-        type: 'done'
-      })
-
-      resolve()
-    })
-  })
+  write(mutex, 1)
+  read(mutex, 1)
+  read(mutex, 2)
+  read(mutex, 3, 500)
+  write(mutex, 2)
+  read(mutex, 4)
 }

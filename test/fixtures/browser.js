@@ -1,59 +1,47 @@
 const mortice = require('../../')
 
-const mutex = mortice()
+async function read (muxex, index, timeout = 0) {
+  const release = await muxex.readLock()
 
-mutex.writeLock(() => {
-  return new Promise((resolve, reject) => {
-    console.info('write 1')
+  await new Promise((resolve) => {
+    console.info(`read ${index}`)
 
-    resolve()
-  })
-})
-  .then(() => {})
-
-mutex.readLock(() => {
-  return new Promise((resolve, reject) => {
-    console.info('read 1')
-
-    resolve()
-  })
-})
-  .then(() => {})
-
-mutex.readLock(() => {
-  return new Promise((resolve, reject) => {
-    console.info('read 2')
-
-    resolve()
-  })
-})
-
-mutex.readLock(() => {
-  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      console.info('read 3')
-
       resolve()
-    }, 500)
-  })
-})
 
-mutex.writeLock(() => {
-  return new Promise((resolve, reject) => {
-    console.info('write 2')
-
-    resolve()
+      if (index === 4) {
+        global.__close__()
+      }
+    }, timeout)
   })
-})
 
-mutex.readLock(() => {
-  return new Promise((resolve, reject) => {
-    console.info('read 4')
+  release()
+}
 
-    resolve()
+async function write (muxex, index, timeout) {
+  const release = await muxex.writeLock()
+
+  await new Promise((resolve) => {
+    console.info(`write ${index}`)
+
+    setTimeout(() => {
+      resolve()
+    }, timeout)
   })
-})
-  .catch(() => {})
-  .then(() => {
-    global.__close__()
-  })
+
+  release()
+}
+
+async function run () {
+  const mutex = mortice()
+
+  // queue up read/write requests, the third read should block the second write
+  write(mutex, 1)
+  read(mutex, 1)
+  read(mutex, 2)
+  read(mutex, 3, 500)
+  write(mutex, 2)
+  read(mutex, 4)
+}
+
+run()

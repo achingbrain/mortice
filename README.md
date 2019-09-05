@@ -33,29 +33,51 @@ const mutex = mortice('my-lock', {
    // control how many read operations are executed concurrently (default: Infinity)
   concurrency: 5,
 
-  // the global object (for use with webworkify and similar) (default: global)
-  global: window,
-
   // by default the the lock will be held on the main thread, set this to true if the
   // a lock should reside on each worker (default: false)
   singleProcess: false
 })
 
-mutex.readLock(() => {
-  return Promise.resolve().then(() => console.info('read 1'))
-})
+Promise.all([
+  (async () => {
+    const release = await mutex.readLock()
 
-mutex.readLock(() => {
-  return Promise.resolve().then(() => console.info('read 2'))
-})
+    try {
+      console.info('read 1')
+    } finally {
+      release()
+    }
+  })(),
+  (async () => {
+    const release = await mutex.readLock()
 
-mutex.writeLock(() => {
-  return delay(200).then(() => console.info('write 1'))
-})
+    try {
+      console.info('read 2')
+    } finally {
+      release()
+    }
+  })(),
+  (async () => {
+    const release = await mutex.writeLock()
 
-mutex.readLock(() => {
-  return Promise.resolve().then(() => console.info('read 3'))
-})
+    try {
+      await delay(1000)
+
+      console.info('write 1')
+    } finally {
+      release()
+    }
+  })(),
+  (async () => {
+    const release = await mutex.readLock()
+
+    try {
+      console.info('read 3')
+    } finally {
+      release()
+    }
+  })()
+])
 ```
 
 ```
@@ -90,13 +112,13 @@ const delay = require('delay')
 
 const mutex = mortice()
 
-mutex.readLock(() => {
-  // return a promise
-})
+let release = await mutex.readLock()
+// read something
+release()
 
-mutex.writeLock(() => {
-  // return a promise
-})
+release = await mutex.writeLock()
+// write something
+release()
 ```
 
 Alternatively you can use the bundled `mortice.Worker` to create web workers and save yourself an extra dependency.

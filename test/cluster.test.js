@@ -2,7 +2,7 @@ import test from 'ava'
 import exec from 'execa'
 import path from 'path'
 
-test('executes locks in correct order', (t) => {
+test.only('executes locks in correct order', (t) => {
   return exec('node', [path.join(__dirname, 'fixtures', 'cluster.js')])
     .then(result => {
       t.is(result.stdout, `write 1
