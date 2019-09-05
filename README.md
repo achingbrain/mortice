@@ -1,6 +1,6 @@
 # mortice
 
-[![Build status](https://travis-ci.org/achingbrain/mortice.svg?branch=master)](https://travis-ci.org/achingbrain/mortice.svg?branch=master)
+[![Build status](https://travis-ci.org/achingbrain/mortice.svg?branch=master)](https://travis-ci.org/achingbrain/mortice)
 
 Isomorphic read/write lock that works in single processes, node clusters and web workers.
 
