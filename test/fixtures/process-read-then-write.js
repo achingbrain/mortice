@@ -1,29 +1,26 @@
 const mortice = require('../../')
+const delay = require('delay')
 
-async function read (muxex, index, timeout = 0) {
-  const release = await muxex.readLock()
-  await new Promise((resolve) => {
-    console.info(`read ${index}`)
-
-    setTimeout(() => {
-      console.info('read 1 complete')
-      resolve()
-    }, timeout)
-  })
-
-  release()
+const counts = {
+  read: 0,
+  write: 0
 }
 
-async function write (muxex, index, timeout = 0) {
-  const release = await muxex.writeLock()
+async function lock (type, muxex, timeout = 0) {
+  counts[type]++
+  const index = counts[type]
 
-  await new Promise((resolve) => {
-    console.info(`write ${index}`)
+  console.info(`${type} ${index} waiting`)
 
-    setTimeout(() => {
-      resolve()
-    }, timeout)
-  })
+  const release = await muxex[`${type}Lock`]()
+
+  console.info(`${type} ${index} start`)
+
+  if (timeout) {
+    await delay(timeout)
+  }
+
+  console.info(`${type} ${index} complete`)
 
   release()
 }
@@ -32,8 +29,8 @@ async function run () {
   const mutex = mortice()
 
   // read should complete before write
-  read(mutex, 1, 500)
-  write(mutex, 1)
+  lock('read', mutex, 500)
+  lock('write', mutex)
 }
 
 run()

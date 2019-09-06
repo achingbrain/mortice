@@ -3,7 +3,6 @@ const mortice = require('../../')
 mortice()
 
 const observe = require('observable-webworkers')
-
 const worker = work(require('./worker.js'))
 
 observe(worker)

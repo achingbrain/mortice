@@ -2,31 +2,43 @@ import test from 'ava'
 import exec from 'execa'
 import path from 'path'
 
-test.only('executes locks in correct order', (t) => {
-  return exec('node', [path.join(__dirname, 'fixtures', 'process.js')])
-    .then(result => {
-      t.is(result.stdout, `write 1
-read 1
-read 2
-read 3
-write 2
-read 4`)
-    })
-})
+test('executes locks in correct order', async (t) => {
+  const result = await exec('node', [path.join(__dirname, 'fixtures', 'process.js')])
 
-test('executes read then waits to start write', (t) => {
-  return exec('node', [path.join(__dirname, 'fixtures', 'process-read-then-write.js')])
-    .then(result => {
-      t.is(result.stdout, `read 1
+  t.is(result.stdout, `write 1 waiting
+read 1 waiting
+read 2 waiting
+read 3 waiting
+write 2 waiting
+read 4 waiting
+write 1 start
+write 1 complete
+read 1 start
 read 1 complete
-write 1`)
-    })
+read 2 start
+read 2 complete
+read 3 start
+read 3 complete
+write 2 start
+write 2 complete
+read 4 start
+read 4 complete`)
 })
 
-test('continues processing after error', (t) => {
-  return exec('node', [path.join(__dirname, 'fixtures', 'process-error-handling.js')])
-    .then(result => {
-      t.is(result.stdout, `read 1
+test('executes read then waits to start write', async (t) => {
+  const result = await exec('node', [path.join(__dirname, 'fixtures', 'process-read-then-write.js')])
+
+  t.is(result.stdout, `read 1 waiting
+write 1 waiting
+read 1 start
+read 1 complete
+write 1 start
+write 1 complete`)
+})
+
+test('continues processing after error', async (t) => {
+  const result = await  exec('node', [path.join(__dirname, 'fixtures', 'process-error-handling.js')])
+
+  t.is(result.stdout, `read 1
 write 1`)
-    })
 })

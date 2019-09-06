@@ -1,54 +1,55 @@
 const mortice = require('../../')
 const globalThis = require('globalthis')()
+const delay = require('delay')
 
-async function read (muxex, index, timeout = 0) {
-  const release = await muxex.readLock()
-  await new Promise((resolve) => {
-    globalThis.postMessage({
-      type: 'log',
-      message: `read ${index}`
-    })
+const counts = {
+  read: 0,
+  write: 0
+}
 
-    setTimeout(() => {
-      resolve()
+async function lock (type, muxex, timeout = 0) {
+  counts[type]++
+  const index = counts[type]
 
-      if (index === 4) {
-        globalThis.postMessage({
-          type: 'done'
-        })
-      }
-    }, timeout)
+  globalThis.postMessage({
+    type: 'log',
+    message: `${type} ${index} waiting`
+  })
+
+  const release = await muxex[`${type}Lock`]()
+
+  globalThis.postMessage({
+    type: 'log',
+    message: `${type} ${index} start`
+  })
+
+  if (timeout) {
+    await delay(timeout)
+  }
+
+  globalThis.postMessage({
+    type: 'log',
+    message: `${type} ${index} complete`
   })
 
   release()
-}
 
-async function write (muxex, index, timeout = 0) {
-  const release = await muxex.writeLock()
-
-  await new Promise((resolve) => {
+  if (type === 'read' && index === 4) {
     globalThis.postMessage({
-      type: 'log',
-      message: `write ${index}`
+      type: 'done'
     })
-
-    setTimeout(() => {
-      resolve()
-    }, timeout)
-  })
-
-  release()
+  }
 }
 
-module.exports = (self) => {
+module.exports = () => {
   const mutex = mortice({
     singleProcess: true
   })
 
-  write(mutex, 1)
-  read(mutex, 1)
-  read(mutex, 2)
-  read(mutex, 3, 500)
-  write(mutex, 2)
-  read(mutex, 4)
+  lock('write', mutex)
+  lock('read', mutex)
+  lock('read', mutex)
+  lock('read', mutex, 500)
+  lock('write', mutex)
+  lock('read', mutex)
 }

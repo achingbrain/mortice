@@ -1,28 +1,26 @@
 const mortice = require('../../')
+const delay = require('delay')
 
-async function read (muxex, index, timeout = 0) {
-  const release = await muxex.readLock()
-  await new Promise((resolve) => {
-    console.info(`read ${index}`)
-
-    setTimeout(() => {
-      resolve()
-    }, timeout)
-  })
-
-  release()
+const counts = {
+  read: 0,
+  write: 0
 }
 
-async function write (muxex, index, timeout = 0) {
-  const release = await muxex.writeLock()
+async function lock (type, muxex, timeout = 0) {
+  counts[type]++
+  const index = counts[type]
 
-  await new Promise((resolve) => {
-    console.info(`write ${index}`)
+  console.info(`${type} ${index} waiting`)
 
-    setTimeout(() => {
-      resolve()
-    }, timeout)
-  })
+  const release = await muxex[`${type}Lock`]()
+
+  console.info(`${type} ${index} start`)
+
+  if (timeout) {
+    await delay(timeout)
+  }
+
+  console.info(`${type} ${index} complete`)
 
   release()
 }
@@ -31,12 +29,12 @@ async function run () {
   const mutex = mortice()
 
   // queue up read/write requests, the third read should block the second write
-  write(mutex, 1)
-  read(mutex, 1)
-  read(mutex, 2)
-  read(mutex, 3, 500)
-  write(mutex, 2)
-  read(mutex, 4)
+  lock('write', mutex)
+  lock('read', mutex)
+  lock('read', mutex)
+  lock('read', mutex, 500)
+  lock('write', mutex)
+  lock('read', mutex)
 }
 
 run()
