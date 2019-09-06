@@ -1,6 +1,6 @@
 {
   "name": "mortice",
-  "version": "1.2.3",
+  "version": "2.0.0",
   "description": "Isomorphic read/write lock that works in single processes, node clusters and web workers",
   "main": "lib/index.js",
   "scripts": {
