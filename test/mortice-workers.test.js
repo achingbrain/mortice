@@ -1,7 +1,7 @@
-import test from 'ava'
-import exec from 'execa'
-import path from 'path'
-import browserify from 'browserify'
+const test = require('ava')
+const exec = require('execa')
+const path = require('path')
+const browserify = require('browserify')
 
 test('execute locks in correct order', async (t) => {
   const result = await exec('run-headless', {

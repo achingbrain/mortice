@@ -1,5 +1,4 @@
 const mortice = require('../../')
-const globalThis = require('globalthis')()
 const delay = require('delay')
 
 const counts = {

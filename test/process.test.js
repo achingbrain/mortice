@@ -1,6 +1,6 @@
-import test from 'ava'
-import exec from 'execa'
-import path from 'path'
+const test = require('ava')
+const exec = require( 'execa')
+const path = require('path')
 
 test('executes locks in correct order', async (t) => {
   const result = await exec('node', [path.join(__dirname, 'fixtures', 'process.js')])
@@ -37,7 +37,7 @@ write 1 complete`)
 })
 
 test('continues processing after error', async (t) => {
-  const result = await  exec('node', [path.join(__dirname, 'fixtures', 'process-error-handling.js')])
+  const result = await exec('node', [path.join(__dirname, 'fixtures', 'process-error-handling.js')])
 
   t.is(result.stdout, `read 1
 write 1`)
