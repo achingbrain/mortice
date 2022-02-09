@@ -1,5 +1,5 @@
 package-lock.json
 *.log
 node_modules
-.npmrc
 .nyc_output
+dist

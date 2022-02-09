@@ -1,8 +1,8 @@
 # mortice
 
-[![Build status](https://travis-ci.org/achingbrain/mortice.svg?branch=master)](https://travis-ci.org/achingbrain/mortice)
+[![Build Status](https://github.com/achingbrain/mortice/actions/workflows/js-test-and-release.yml/badge.svg?branch=main)](https://github.com/achingbrain/mortice/actions/workflows/js-test-and-release.yml)
 
-Isomorphic read/write lock that works in single processes, node clusters and web workers.
+> Isomorphic read/write lock that works in single processes, node clusters and web workers.
 
 ## Features
 
@@ -21,8 +21,8 @@ $ npm install --save mortice
 ## Usage
 
 ```javascript
-const mortice = require('mortice')
-const delay = require('delay')
+import mortice from 'mortice'
+import delay from 'delay'
 
 // the lock name & options objects are both optional
 const mutex = mortice('my-lock', {
@@ -94,8 +94,8 @@ Because there's no global way to evesdrop on messages sent by Web Workers, pleas
 
 ```javascript
 // main.js
-const mortice = require('mortice')
-const observe = require('observable-webworkers')
+import mortice from 'mortice'
+import observe from 'observable-webworkers'
 
 // create our lock on the main thread, it will be held here
 const mutex = mortice()
@@ -107,8 +107,8 @@ observe(worker)
 
 ```javascript
 // worker.js
-const mortice = require('mortice')
-const delay = require('delay')
+import mortice from 'mortice'
+import delay from 'delay'
 
 const mutex = mortice()
 
@@ -119,16 +119,4 @@ release()
 release = await mutex.writeLock()
 // write something
 release()
-```
-
-Alternatively you can use the bundled `mortice.Worker` to create web workers and save yourself an extra dependency.
-
-```javascript
-const mortice = require('mortice')
-const Worker = mortice.Worker
-
-// create our lock on the main thread, it will be held here
-const mutex = mortice()
-
-const worker = new Worker('worker.js')
 ```
