@@ -136,7 +136,7 @@
     "release": "semantic-release"
   },
   "dependencies": {
-    "nanoid": "^3.1.20",
+    "nanoid": "^4.0.0",
     "observable-webworkers": "^2.0.1",
     "p-queue": "^7.2.0",
     "p-timeout": "^5.0.2"
