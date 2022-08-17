@@ -41,7 +41,9 @@ async function createReleaseable (queue: PQueue, options: Required<MorticeOption
         resolve()
       })
     })
-  })(), options.timeout))
+  })(), {
+    milliseconds: options.timeout
+  }))
 
   return await p
 }

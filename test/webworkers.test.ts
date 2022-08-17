@@ -1,4 +1,4 @@
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import observe from 'observable-webworkers'
 import type { WebworkerEventListener } from 'observable-webworkers'
 

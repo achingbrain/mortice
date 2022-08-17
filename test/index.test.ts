@@ -1,4 +1,4 @@
-import { expect } from 'aegir/utils/chai.js'
+import { expect } from 'aegir/chai'
 import mortice, { Mortice } from '../src/index.js'
 import { lock } from './fixtures/lock.js'
 
