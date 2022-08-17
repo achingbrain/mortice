@@ -7,7 +7,6 @@ export interface MorticeOptions {
   timeout?: number
   concurrency?: number
   singleProcess?: boolean
-  global?: typeof globalThis
 }
 
 export interface Mortice {
@@ -109,7 +108,6 @@ const defaultOptions = {
   name: 'lock',
   concurrency: Infinity,
   timeout: 84600000,
-  global: globalThis,
   singleProcess: false
 }
 
