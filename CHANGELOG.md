@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/achingbrain/mortice/compare/v3.0.1...v3.0.2) (2023-12-08)
+
+
+### Bug Fixes
+
+* update all docs and config ([#68](https://github.com/achingbrain/mortice/issues/68)) ([eb03e84](https://github.com/achingbrain/mortice/commit/eb03e84e85ea267f499b014f36a57fa4649c77c6))
+
 ## [3.0.1](https://github.com/achingbrain/mortice/compare/v3.0.0...v3.0.1) (2022-08-17)
 
 

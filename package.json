@@ -1,6 +1,6 @@
 {
   "name": "mortice",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Isomorphic read/write lock that works in single processes, node clusters and web workers",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "license": "Apache-2.0 OR MIT",
