@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid'
+import observer from 'observable-webworkers'
 import {
   WORKER_REQUEST_READ_LOCK,
   WORKER_RELEASE_READ_LOCK,
@@ -7,7 +8,6 @@ import {
   WORKER_RELEASE_WRITE_LOCK,
   MASTER_GRANT_WRITE_LOCK
 } from './constants.js'
-import observer from 'observable-webworkers'
 import type { MorticeImplementation, MorticeOptions, Release } from './index.js'
 
 const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: string, requestType: string, releaseType: string, grantType: string) => {
@@ -34,8 +34,8 @@ const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: string, requ
           })
 
           // wait for worker to finish
-          return await new Promise<void>((resolve) => {
-            const releaseEventListener = (event: MessageEvent) => {
+          await new Promise<void>((resolve) => {
+            const releaseEventListener = (event: MessageEvent): void => {
               if (event == null || event.data == null) {
                 return
               }
@@ -70,8 +70,8 @@ const makeWorkerLockRequest = (name: string, requestType: string, grantType: str
       name
     })
 
-    return await new Promise<Release>((resolve) => {
-      const listener = (event: MessageEvent) => {
+    return new Promise<Release>((resolve) => {
+      const listener = (event: MessageEvent): void => {
         if (event == null || event.data == null) {
           return
         }

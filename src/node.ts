@@ -1,3 +1,4 @@
+import cluster from 'cluster'
 import { nanoid } from 'nanoid'
 import {
   WORKER_REQUEST_READ_LOCK,
@@ -8,7 +9,6 @@ import {
   MASTER_GRANT_WRITE_LOCK
 } from './constants.js'
 import type { MorticeImplementation, MorticeOptions, Release } from './index.js'
-import cluster from 'cluster'
 import type { Worker } from 'cluster'
 
 interface RequestEvent {
@@ -32,8 +32,8 @@ const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: string, requ
             })
 
             // wait for worker to finish
-            return await new Promise<void>((resolve) => {
-              const releaseEventListener = (releaseEvent: RequestEvent) => {
+            await new Promise<void>((resolve) => {
+              const releaseEventListener = (releaseEvent: RequestEvent): void => {
                 if (releaseEvent.type === releaseType && releaseEvent.identifier === requestEvent.identifier) {
                   worker.removeListener('message', releaseEventListener)
                   resolve()
@@ -63,8 +63,8 @@ const makeWorkerLockRequest = (name: string, requestType: string, grantType: str
       name
     })
 
-    return await new Promise<Release>((resolve) => {
-      const listener = (event: RequestEvent) => {
+    return new Promise<Release>((resolve) => {
+      const listener = (event: RequestEvent): void => {
         if (event.type === grantType && event.identifier === id) {
           process.removeListener('message', listener)
 

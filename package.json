@@ -12,6 +12,10 @@
   "bugs": {
     "url": "https://github.com/achingbrain/mortice/issues"
   },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "keywords": [
     "async",
     "await",
@@ -20,15 +24,11 @@
     "mutex",
     "read-write"
   ],
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
-  },
   "type": "module",
   "types": "./dist/src/index.d.ts",
   "files": [
     "src",
-    "dist/src",
+    "dist",
     "!dist/test",
     "!**/*.tsbuildinfo"
   ],
@@ -41,6 +41,7 @@
   "eslintConfig": {
     "extends": "ipfs",
     "parserOptions": {
+      "project": true,
       "sourceType": "module"
     }
   },
@@ -138,19 +139,20 @@
     "test:firefox": "aegir test -t browser -- --browser firefox",
     "test:electron-main": "aegir test -f dist/test/node.js -t electron-main",
     "build": "aegir build && node esbuild.js",
-    "release": "aegir release"
+    "release": "aegir release",
+    "docs": "aegir docs"
   },
   "dependencies": {
-    "nanoid": "^4.0.0",
+    "nanoid": "^5.0.4",
     "observable-webworkers": "^2.0.1",
     "p-queue": "^7.2.0",
     "p-timeout": "^6.0.0"
   },
   "devDependencies": {
-    "aegir": "^37.5.1",
-    "delay": "^5.0.0",
-    "esbuild": "^0.15.5",
-    "execa": "^6.0.0",
+    "aegir": "^41.1.14",
+    "delay": "^6.0.0",
+    "esbuild": "^0.19.8",
+    "execa": "^8.0.1",
     "wherearewe": "^2.0.1"
   },
   "browser": {
