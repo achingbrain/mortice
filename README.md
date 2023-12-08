@@ -1,7 +1,7 @@
 # mortice <!-- omit in toc -->
 
 [![codecov](https://img.shields.io/codecov/c/github/achingbrain/mortice.svg?style=flat-square)](https://codecov.io/gh/achingbrain/mortice)
-[![CI](https://img.shields.io/github/actions/workflow/status/achingbrain/mortice/js-test-and-release.yml?branch=master\&style=flat-square)](https://github.com/achingbrain/mortice/actions/workflows/js-test-and-release.yml?query=branch%3Amaster)
+[![CI](https://img.shields.io/github/actions/workflow/status/achingbrain/mortice/js-test-and-release.yml?branch=main\&style=flat-square)](https://github.com/achingbrain/mortice/actions/workflows/js-test-and-release.yml?query=branch%3Amain)
 
 > Isomorphic read/write lock that works in single processes, node clusters and web workers
 
