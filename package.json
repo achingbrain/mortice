@@ -143,7 +143,6 @@
     "docs": "aegir docs"
   },
   "dependencies": {
-    "nanoid": "^5.0.4",
     "observable-webworkers": "^2.0.1",
     "p-queue": "^7.2.0",
     "p-timeout": "^6.0.0"

@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid'
 import observer from 'observable-webworkers'
 import {
   WORKER_REQUEST_READ_LOCK,
@@ -8,6 +7,7 @@ import {
   WORKER_RELEASE_WRITE_LOCK,
   MASTER_GRANT_WRITE_LOCK
 } from './constants.js'
+import { nanoid } from './utils.js'
 import type { MorticeImplementation, MorticeOptions, Release } from './index.js'
 
 const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: string, requestType: string, releaseType: string, grantType: string) => {
