@@ -1,3 +1,15 @@
+## [3.0.3](https://github.com/achingbrain/mortice/compare/v3.0.2...v3.0.3) (2023-12-08)
+
+
+### Bug Fixes
+
+* remove nanoid ([#71](https://github.com/achingbrain/mortice/issues/71)) ([8628f6b](https://github.com/achingbrain/mortice/commit/8628f6ba29013023ea537684d89b040b052cb0be))
+
+
+### Trivial Changes
+
+* rename master to main ([#69](https://github.com/achingbrain/mortice/issues/69)) ([5db1d75](https://github.com/achingbrain/mortice/commit/5db1d7572cb9d5f483e528d479fc9d12a73510d9))
+
 ## [3.0.2](https://github.com/achingbrain/mortice/compare/v3.0.1...v3.0.2) (2023-12-08)
 
 
