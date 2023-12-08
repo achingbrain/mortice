@@ -1,6 +1,9 @@
-package-lock.json
-*.log
 node_modules
-.nyc_output
+build
 dist
+.docs
 .coverage
+node_modules
+package-lock.json
+yarn.lock
+.vscode

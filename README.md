@@ -1,26 +1,11 @@
 # mortice <!-- omit in toc -->
 
 [![codecov](https://img.shields.io/codecov/c/github/achingbrain/mortice.svg?style=flat-square)](https://codecov.io/gh/achingbrain/mortice)
-[![CI](https://img.shields.io/github/workflow/status/achingbrain/mortice/test%20&%20maybe%20release/master?style=flat-square)](https://github.com/achingbrain/mortice/actions/workflows/js-test-and-release.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/achingbrain/mortice/js-test-and-release.yml?branch=master\&style=flat-square)](https://github.com/achingbrain/mortice/actions/workflows/js-test-and-release.yml?query=branch%3Amaster)
 
 > Isomorphic read/write lock that works in single processes, node clusters and web workers
 
-## Table of contents <!-- omit in toc -->
-
-- [Install](#install)
-- [Features](#features)
-- [Usage](#usage)
-- [Browser](#browser)
-- [License](#license)
-- [Contribution](#contribution)
-
-## Install
-
-```console
-$ npm i mortice
-```
-
-## Features
+# About
 
 - Reads occur concurrently
 - Writes occur one at a time
@@ -90,11 +75,13 @@ Promise.all([
 ])
 ```
 
-    read 1
-    read 2
-    <small pause>
-    write 1
-    read 3
+```
+read 1
+read 2
+<small pause>
+write 1
+read 3
+```
 
 ## Browser
 
@@ -129,13 +116,31 @@ release = await mutex.writeLock()
 release()
 ```
 
-## License
+# Install
+
+```console
+$ npm i mortice
+```
+
+## Browser `<script>` tag
+
+Loading this module through a script tag will make it's exports available as `Mortice` in the global namespace.
+
+```html
+<script src="https://unpkg.com/mortice/dist/index.min.js"></script>
+```
+
+# API Docs
+
+- <https://achingbrain.github.io/mortice>
+
+# License
 
 Licensed under either of
 
 - Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / <http://www.apache.org/licenses/LICENSE-2.0>)
 - MIT ([LICENSE-MIT](LICENSE-MIT) / <http://opensource.org/licenses/MIT>)
 
-## Contribution
+# Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.

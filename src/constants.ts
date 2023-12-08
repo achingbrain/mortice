@@ -1,4 +1,3 @@
-
 export const WORKER_REQUEST_READ_LOCK = 'lock:worker:request-read'
 export const WORKER_RELEASE_READ_LOCK = 'lock:worker:release-read'
 export const MASTER_GRANT_READ_LOCK = 'lock:master:grant-read'

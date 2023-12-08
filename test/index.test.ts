@@ -1,5 +1,5 @@
 import { expect } from 'aegir/chai'
-import mortice, { Mortice } from '../src/index.js'
+import mortice, { type Mortice } from '../src/index.js'
 import { lock } from './fixtures/lock.js'
 
 describe('mortice', () => {
@@ -67,7 +67,7 @@ describe('mortice', () => {
     const mutex = mortice()
     const result: string[] = []
 
-    async function read (muxex: Mortice) {
+    async function read (muxex: Mortice): Promise<void> {
       const release = await muxex.readLock()
 
       try {
@@ -79,7 +79,7 @@ describe('mortice', () => {
       }
     }
 
-    async function write (muxex: Mortice) {
+    async function write (muxex: Mortice): Promise<void> {
       const release = await muxex.writeLock()
 
       await new Promise<void>((resolve) => {

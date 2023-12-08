@@ -19,8 +19,8 @@ interface ErrorEvent {
 
 type WorkerEvent = ResultEvent | LogEvent | ErrorEvent
 
-async function runWorker (path: string) {
-  return await new Promise<string[]>((resolve, reject) => {
+async function runWorker (path: string): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
     const worker = new Worker(path, {
       type: 'module'
     })

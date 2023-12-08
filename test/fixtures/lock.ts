@@ -6,7 +6,7 @@ export interface Counts {
   write: number
 }
 
-export async function lock (type: 'read' | 'write', muxex: Mortice, counts: Counts, result: string[], timeout = 0) {
+export async function lock (type: 'read' | 'write', muxex: Mortice, counts: Counts, result: string[], timeout = 0): Promise<void> {
   counts[type]++
   const index = counts[type]
 

@@ -2,7 +2,7 @@ import cluster from 'cluster'
 import mortice from '../../src/index.js'
 import { lock } from './lock.js'
 
-async function run () {
+async function run (): Promise<void> {
   const mutex = mortice({
     singleProcess: true
   })
