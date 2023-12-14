@@ -144,7 +144,7 @@
   },
   "dependencies": {
     "observable-webworkers": "^2.0.1",
-    "p-queue": "^7.2.0",
+    "p-queue": "^8.0.1",
     "p-timeout": "^6.0.0"
   },
   "devDependencies": {
