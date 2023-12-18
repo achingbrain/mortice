@@ -1,3 +1,10 @@
+## [3.0.4](https://github.com/achingbrain/mortice/compare/v3.0.3...v3.0.4) (2023-12-18)
+
+
+### Dependencies
+
+* bump p-queue from 7.4.1 to 8.0.1 ([#72](https://github.com/achingbrain/mortice/issues/72)) ([7ab57c4](https://github.com/achingbrain/mortice/commit/7ab57c473f0dd1f89b3d1ac226f9da42e7976c9e))
+
 ## [3.0.3](https://github.com/achingbrain/mortice/compare/v3.0.2...v3.0.3) (2023-12-08)
 
 
