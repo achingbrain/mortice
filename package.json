@@ -148,7 +148,7 @@
     "p-timeout": "^6.0.0"
   },
   "devDependencies": {
-    "aegir": "^41.1.14",
+    "aegir": "^42.2.2",
     "delay": "^6.0.0",
     "esbuild": "^0.19.8",
     "execa": "^8.0.1",
