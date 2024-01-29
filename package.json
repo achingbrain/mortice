@@ -150,7 +150,7 @@
   "devDependencies": {
     "aegir": "^41.1.14",
     "delay": "^6.0.0",
-    "esbuild": "^0.19.8",
+    "esbuild": "^0.20.0",
     "execa": "^8.0.1",
     "wherearewe": "^2.0.1"
   },
