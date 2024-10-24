@@ -140,7 +140,9 @@
     "test:electron-main": "aegir test -f dist/test/node.js -t electron-main",
     "build": "aegir build && node esbuild.js",
     "release": "aegir release",
-    "docs": "aegir docs"
+    "docs": "aegir docs",
+    "dep-check": "aegir dep-check -i esbuild",
+    "doc-check": "aegir doc-check"
   },
   "dependencies": {
     "observable-webworkers": "^2.0.1",
@@ -148,7 +150,7 @@
     "p-timeout": "^6.0.0"
   },
   "devDependencies": {
-    "aegir": "^42.2.5",
+    "aegir": "^44.1.4",
     "delay": "^6.0.0",
     "esbuild": "^0.19.8",
     "execa": "^8.0.1",

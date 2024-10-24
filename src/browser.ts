@@ -36,7 +36,7 @@ const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: string, requ
           // wait for worker to finish
           await new Promise<void>((resolve) => {
             const releaseEventListener = (event: MessageEvent): void => {
-              if (event == null || event.data == null) {
+              if (event?.data == null) {
                 return
               }
 
@@ -72,7 +72,7 @@ const makeWorkerLockRequest = (name: string, requestType: string, grantType: str
 
     return new Promise<Release>((resolve) => {
       const listener = (event: MessageEvent): void => {
-        if (event == null || event.data == null) {
+        if (event?.data == null) {
           return
         }
 
