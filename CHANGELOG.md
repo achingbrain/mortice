@@ -1,3 +1,9 @@
+## [3.0.6](https://github.com/achingbrain/mortice/compare/v3.0.5...v3.0.6) (2024-10-24)
+
+### Dependencies
+
+* **dev:** bump esbuild from 0.19.12 to 0.24.0 ([#86](https://github.com/achingbrain/mortice/issues/86)) ([2e3610f](https://github.com/achingbrain/mortice/commit/2e3610f9d0e1a1d10ba5dac2bd988a7d0fb4cc2e))
+
 ## [3.0.5](https://github.com/achingbrain/mortice/compare/v3.0.4...v3.0.5) (2024-10-24)
 
 ### Trivial Changes
