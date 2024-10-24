@@ -1,3 +1,13 @@
+## [3.0.5](https://github.com/achingbrain/mortice/compare/v3.0.4...v3.0.5) (2024-10-24)
+
+### Trivial Changes
+
+* update ci ([6dee3e4](https://github.com/achingbrain/mortice/commit/6dee3e486776ed7d1299978bbafd22a70342013a))
+
+### Dependencies
+
+* **dev:** bump aegir from 41.3.5 to 42.2.5 ([#84](https://github.com/achingbrain/mortice/issues/84)) ([ce44225](https://github.com/achingbrain/mortice/commit/ce44225b3ddc349d6dd745243e09fa9e1247d607))
+
 ## [3.0.4](https://github.com/achingbrain/mortice/compare/v3.0.3...v3.0.4) (2023-12-18)
 
 
