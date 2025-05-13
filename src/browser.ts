@@ -1,3 +1,4 @@
+import { AbortError } from 'abort-error'
 import observer from 'observable-webworkers'
 import {
   WORKER_REQUEST_READ_LOCK,
@@ -5,14 +6,18 @@ import {
   MASTER_GRANT_READ_LOCK,
   WORKER_REQUEST_WRITE_LOCK,
   WORKER_RELEASE_WRITE_LOCK,
-  MASTER_GRANT_WRITE_LOCK
+  MASTER_GRANT_WRITE_LOCK,
+  WORKER_ABORT_READ_LOCK_REQUEST,
+  WORKER_ABORT_WRITE_LOCK_REQUEST
 } from './constants.js'
 import { nanoid } from './utils.js'
-import type { MorticeImplementation, MorticeOptions, Release } from './index.js'
+import type { MorticeOptions, Release } from './index.js'
+import type { AbortRequestType, MorticeImplementation, RequestType } from './interface.js'
+import type { AbortOptions } from 'abort-error'
 
-const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: string, requestType: string, releaseType: string, grantType: string) => {
+const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: RequestType, abortMasterEvent: AbortRequestType, requestType: string, abortType: string, releaseType: string, grantType: string) => {
   return (worker: Worker, event: MessageEvent) => {
-    if (event.data.type !== requestType) {
+    if (event.data == null) {
       return
     }
 
@@ -22,46 +27,64 @@ const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: string, requ
       identifier: event.data.identifier
     }
 
-    emitter.dispatchEvent(new MessageEvent(masterEvent, {
-      data: {
-        name: requestEvent.name,
-        handler: async (): Promise<void> => {
-          // grant lock to worker
-          worker.postMessage({
-            type: grantType,
-            name: requestEvent.name,
-            identifier: requestEvent.identifier
-          })
+    if (event.data.type === requestType) {
+      emitter.dispatchEvent(new MessageEvent(masterEvent, {
+        data: {
+          name: requestEvent.name,
+          handler: async (): Promise<void> => {
+            // grant lock to worker
+            worker.postMessage({
+              type: grantType,
+              name: requestEvent.name,
+              identifier: requestEvent.identifier
+            })
 
-          // wait for worker to finish
-          await new Promise<void>((resolve) => {
-            const releaseEventListener = (event: MessageEvent): void => {
-              if (event?.data == null) {
-                return
+            // wait for worker to finish
+            await new Promise<void>((resolve) => {
+              const releaseEventListener = (event: MessageEvent): void => {
+                if (event?.data == null) {
+                  return
+                }
+
+                const releaseEvent = {
+                  type: event.data.type,
+                  name: event.data.name,
+                  identifier: event.data.identifier
+                }
+
+                if (releaseEvent.type === releaseType && releaseEvent.identifier === requestEvent.identifier) {
+                  worker.removeEventListener('message', releaseEventListener)
+                  resolve()
+                }
               }
 
-              const releaseEvent = {
-                type: event.data.type,
-                name: event.data.name,
-                identifier: event.data.identifier
-              }
-
-              if (releaseEvent.type === releaseType && releaseEvent.identifier === requestEvent.identifier) {
-                worker.removeEventListener('message', releaseEventListener)
-                resolve()
-              }
-            }
-
-            worker.addEventListener('message', releaseEventListener)
-          })
+              worker.addEventListener('message', releaseEventListener)
+            })
+          }
         }
-      }
-    }))
+      }))
+    }
+
+    if (requestEvent.type === abortType) {
+      // tell worker we are no longer interested in the lock
+      worker.postMessage({
+        type: abortType,
+        name: requestEvent.name,
+        identifier: requestEvent.identifier
+      })
+
+      emitter.dispatchEvent(new MessageEvent(abortMasterEvent, {
+        data: {
+          name: requestEvent.name
+        }
+      }))
+    }
   }
 }
 
-const makeWorkerLockRequest = (name: string, requestType: string, grantType: string, releaseType: string) => {
-  return async () => {
+const makeWorkerLockRequest = (name: string, requestType: string, abortType: string, grantType: string, releaseType: string) => {
+  return async (options?: AbortOptions) => {
+    options?.signal?.throwIfAborted()
     const id = nanoid()
 
     globalThis.postMessage({
@@ -70,7 +93,21 @@ const makeWorkerLockRequest = (name: string, requestType: string, grantType: str
       name
     })
 
-    return new Promise<Release>((resolve) => {
+    return new Promise<Release>((resolve, reject) => {
+      const abortListener = (): void => {
+        process.send?.({
+          type: abortType,
+          identifier: id,
+          name
+        })
+
+        reject(new AbortError())
+      }
+
+      options?.signal?.addEventListener('abort', abortListener, {
+        once: true
+      })
+
       const listener = (event: MessageEvent): void => {
         if (event?.data == null) {
           return
@@ -83,6 +120,7 @@ const makeWorkerLockRequest = (name: string, requestType: string, grantType: str
 
         if (responseEvent.type === grantType && responseEvent.identifier === id) {
           globalThis.removeEventListener('message', listener)
+          options?.signal?.removeEventListener('abort', abortListener)
 
           // grant lock
           resolve(() => {
@@ -112,15 +150,15 @@ export default (options: Required<MorticeOptions>): MorticeImplementation | Even
   if (isPrimary) {
     const emitter = new EventTarget()
 
-    observer.addEventListener('message', handleWorkerLockRequest(emitter, 'requestReadLock', WORKER_REQUEST_READ_LOCK, WORKER_RELEASE_READ_LOCK, MASTER_GRANT_READ_LOCK))
-    observer.addEventListener('message', handleWorkerLockRequest(emitter, 'requestWriteLock', WORKER_REQUEST_WRITE_LOCK, WORKER_RELEASE_WRITE_LOCK, MASTER_GRANT_WRITE_LOCK))
+    observer.addEventListener('message', handleWorkerLockRequest(emitter, 'requestReadLock', 'abortReadLockRequest', WORKER_REQUEST_READ_LOCK, WORKER_ABORT_READ_LOCK_REQUEST, WORKER_RELEASE_READ_LOCK, MASTER_GRANT_READ_LOCK))
+    observer.addEventListener('message', handleWorkerLockRequest(emitter, 'requestWriteLock', 'abortWriteLockRequest', WORKER_REQUEST_WRITE_LOCK, WORKER_ABORT_WRITE_LOCK_REQUEST, WORKER_RELEASE_WRITE_LOCK, MASTER_GRANT_WRITE_LOCK))
 
     return emitter
   }
 
   return {
     isWorker: true,
-    readLock: (name) => makeWorkerLockRequest(name, WORKER_REQUEST_READ_LOCK, MASTER_GRANT_READ_LOCK, WORKER_RELEASE_READ_LOCK),
-    writeLock: (name) => makeWorkerLockRequest(name, WORKER_REQUEST_WRITE_LOCK, MASTER_GRANT_WRITE_LOCK, WORKER_RELEASE_WRITE_LOCK)
+    readLock: (name) => makeWorkerLockRequest(name, WORKER_REQUEST_READ_LOCK, WORKER_ABORT_READ_LOCK_REQUEST, MASTER_GRANT_READ_LOCK, WORKER_RELEASE_READ_LOCK),
+    writeLock: (name) => makeWorkerLockRequest(name, WORKER_REQUEST_WRITE_LOCK, WORKER_ABORT_WRITE_LOCK_REQUEST, MASTER_GRANT_WRITE_LOCK, WORKER_RELEASE_WRITE_LOCK)
   }
 }
