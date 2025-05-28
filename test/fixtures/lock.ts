@@ -1,5 +1,5 @@
 import delay from 'delay'
-import type { Mortice } from '../../src'
+import type { Mortice } from '../../src/index.js'
 
 export interface Counts {
   read: number

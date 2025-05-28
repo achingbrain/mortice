@@ -28,25 +28,14 @@ repo and examine the changes made.
 - Locks can be created with different names
 - Reads/writes can time out
 
-## Usage
+## Example
 
 ```javascript
 import mortice from 'mortice'
 import delay from 'delay'
 
 // the lock name & options objects are both optional
-const mutex = mortice('my-lock', {
-
-  // how long before write locks time out (default: 24 hours)
-  timeout: 30000,
-
-   // control how many read operations are executed concurrently (default: Infinity)
-  concurrency: 5,
-
-  // by default the the lock will be held on the main thread, set this to true if the
-  // a lock should reside on each worker (default: false)
-  singleProcess: false
-})
+const mutex = mortice()
 
 Promise.all([
   (async () => {

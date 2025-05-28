@@ -1,6 +1,8 @@
 import { expect } from 'aegir/chai'
-import mortice, { type Mortice } from '../src/index.js'
+import delay from 'delay'
+import mortice from '../src/index.js'
 import { lock } from './fixtures/lock.js'
+import type { Mortice } from '../src/index.js'
 
 describe('mortice', () => {
   it('executes locks in correct order', async () => {
@@ -99,5 +101,51 @@ describe('mortice', () => {
       'read 1',
       'write 1'
     ])
+  })
+
+  it('times out acquiring a read lock', async () => {
+    const mutex = mortice({
+      name: 'timeout-read'
+    })
+
+    void Promise.resolve().then(async () => {
+      const release = await mutex.writeLock()
+
+      try {
+        await new Promise(() => {})
+      } finally {
+        release()
+      }
+    })
+
+    await delay(10)
+
+    await expect(mutex.readLock({
+      signal: AbortSignal.timeout(100)
+    })).to.eventually.be.rejected
+      .with.property('name', 'AbortError')
+  })
+
+  it('times out acquiring a write lock', async () => {
+    const mutex = mortice({
+      name: 'timeout-write'
+    })
+
+    void Promise.resolve().then(async () => {
+      const release = await mutex.readLock()
+
+      try {
+        await new Promise(() => {})
+      } finally {
+        release()
+      }
+    })
+
+    await delay(10)
+
+    await expect(mutex.writeLock({
+      signal: AbortSignal.timeout(100)
+    })).to.eventually.be.rejected
+      .with.property('name', 'AbortError')
   })
 })
