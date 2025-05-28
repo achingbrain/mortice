@@ -1,3 +1,9 @@
+## [3.1.0](https://github.com/achingbrain/mortice/compare/v3.0.6...v3.1.0) (2025-05-28)
+
+### Features
+
+* support lock timeouts ([#95](https://github.com/achingbrain/mortice/issues/95)) ([921d47d](https://github.com/achingbrain/mortice/commit/921d47d444e7750d658485bae116239cb17e7d06))
+
 ## [3.0.6](https://github.com/achingbrain/mortice/compare/v3.0.5...v3.0.6) (2024-10-24)
 
 ### Dependencies
