@@ -11,7 +11,6 @@ import {
   WORKER_ABORT_WRITE_LOCK_REQUEST,
   MASTER_READ_LOCK_ERROR,
   MASTER_WRITE_LOCK_ERROR,
-  MASTER_FINALIZE,
   WORKER_FINALIZE
 } from './constants.js'
 import { nanoid } from './utils.js'
@@ -93,7 +92,7 @@ const handleWorkerLockRequest = (emitter: EventTarget, masterEvent: RequestType,
 
     // worker is done with lock
     if (requestEvent.type === WORKER_FINALIZE) {
-      emitter.dispatchEvent(new MessageEvent<FinalizeEventData>(MASTER_FINALIZE, {
+      emitter.dispatchEvent(new MessageEvent<FinalizeEventData>('finalizeRequest', {
         data: {
           name: requestEvent.name
         }
