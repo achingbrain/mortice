@@ -1,6 +1,6 @@
 import mortice from '../../src/index.js'
 import { lock } from './lock.js'
-import { postMessage } from './worker-post-message.ts'
+import { postMessage } from './worker-post-message.js'
 
 async function run (): Promise<string[]> {
   const mutex = mortice({

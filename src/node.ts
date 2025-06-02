@@ -15,15 +15,15 @@ import {
   BROADCAST_CHANNEL_NAME,
   defaultOptions
 } from './constants.js'
+import { handleChannelWorkerLockRequest } from './main/channel.ts'
+import { handleClusterWorkerLockRequest } from './main/cluster.ts'
+import { MorticeChannelWorker } from './workers/channel.ts'
+import { MorticeClusterWorker } from './workers/cluster.ts'
 import type { Mortice, MorticeOptions } from './index.js'
 import type { MorticeEvents } from './mortice.js'
 import type { TypedEventTarget } from 'main-event'
-import { handleClusterWorkerLockRequest } from './main/cluster.ts'
-import { handleChannelWorkerLockRequest } from './main/channel.ts'
-import { MorticeClusterWorker } from './workers/cluster.ts'
-import { MorticeChannelWorker } from './workers/channel.ts'
 
-function isMain () {
+function isMain (): boolean {
   if (worker.isMainThread === false) {
     return false
   }

@@ -1,3 +1,4 @@
+import { TypedEventEmitter } from 'main-event'
 import {
   WORKER_REQUEST_READ_LOCK,
   WORKER_RELEASE_READ_LOCK,
@@ -12,11 +13,11 @@ import {
   BROADCAST_CHANNEL_NAME,
   defaultOptions
 } from './constants.js'
-import type { Mortice, MorticeOptions } from './index.js'
-import type { MorticeEvents} from './mortice.js'
-import { TypedEventEmitter, type TypedEventTarget } from 'main-event'
-import { MorticeChannelWorker } from './workers/channel.ts'
 import { handleChannelWorkerLockRequest } from './main/channel.ts'
+import { MorticeChannelWorker } from './workers/channel.ts'
+import type { Mortice, MorticeOptions } from './index.js'
+import type { MorticeEvents } from './mortice.js'
+import type { TypedEventTarget } from 'main-event'
 
 export default (options: Required<MorticeOptions>): Mortice | TypedEventTarget<MorticeEvents> => {
   options = Object.assign({}, defaultOptions, options)

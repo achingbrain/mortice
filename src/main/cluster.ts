@@ -2,8 +2,8 @@ import {
   WORKER_FINALIZE
 } from '../constants.js'
 import type { AbortEventData, AbortRequestType, FinalizeEventData, MorticeEvents, RequestEvent, RequestEventData, RequestType } from '../mortice.js'
-import type { Worker } from 'node:cluster'
 import type { TypedEventTarget } from 'main-event'
+import type { Worker } from 'node:cluster'
 
 export const handleClusterWorkerLockRequest = (emitter: TypedEventTarget<MorticeEvents>, masterEvent: RequestType, abortMasterEvent: AbortRequestType, requestType: string, abortType: string, errorType: string, releaseType: string, grantType: string) => {
   return (worker: Worker, requestEvent: RequestEvent) => {

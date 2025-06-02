@@ -1,8 +1,8 @@
 import {
   WORKER_FINALIZE
 } from '../constants.js'
-import { type AbortEventData, type AbortRequestType, type FinalizeEventData, type MorticeEvents, type RequestEventData, type RequestType } from '../mortice.js'
-import { type TypedEventTarget } from 'main-event'
+import type { AbortEventData, AbortRequestType, FinalizeEventData, MorticeEvents, RequestType } from '../mortice.js'
+import type { TypedEventTarget } from 'main-event'
 
 export const handleChannelWorkerLockRequest = (emitter: TypedEventTarget<MorticeEvents>, channel: BroadcastChannel, masterEvent: RequestType, abortMasterEvent: AbortRequestType, requestType: string, abortType: string, errorType: string, releaseType: string, grantType: string) => {
   return (event: MessageEvent) => {

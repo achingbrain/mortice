@@ -1,3 +1,3 @@
-export function postMessage (val: any) {
+export function postMessage (val: any): void {
   globalThis.postMessage(val)
 }

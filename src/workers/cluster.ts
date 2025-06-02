@@ -13,8 +13,8 @@ import {
 } from '../constants.js'
 import { nanoid } from '../utils.js'
 import type { Mortice, Release } from '../index.js'
-import type { AbortOptions } from 'abort-error'
 import type { RequestEvent } from '../mortice.ts'
+import type { AbortOptions } from 'abort-error'
 
 export class MorticeClusterWorker implements Mortice {
   private name: string
