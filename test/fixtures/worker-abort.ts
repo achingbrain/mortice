@@ -13,9 +13,16 @@ async function run (): Promise<string[]> {
 
   // queue up requests, the second should abort and the third should continue
   const p = [
-    lock('write', mutex, counts, result, 500),
-    lock('write', mutex, counts, result, 500, controller.signal).catch(() => {}),
-    lock('write', mutex, counts, result, 500)
+    lock('write', mutex, counts, result, {
+      timeout: 500
+    }),
+    lock('write', mutex, counts, result, {
+      timeout: 500,
+      signal: controller.signal
+    }).catch(() => {}),
+    lock('write', mutex, counts, result, {
+      timeout: 500
+    })
   ]
 
   controller.abort()

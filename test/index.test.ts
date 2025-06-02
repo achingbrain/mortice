@@ -51,7 +51,9 @@ describe('mortice', () => {
     void lock('write', mutex, counts, result)
     void lock('read', mutex, counts, result)
     void lock('read', mutex, counts, result)
-    void lock('read', mutex, counts, result, 500)
+    void lock('read', mutex, counts, result, {
+      timeout: 500
+    })
     void lock('write', mutex, counts, result)
     await lock('read', mutex, counts, result)
 
@@ -86,7 +88,9 @@ describe('mortice', () => {
     }
 
     // read should complete before write starts
-    void lock('read', mutex, counts, result, 500)
+    void lock('read', mutex, counts, result, {
+      timeout: 500
+    })
     await lock('write', mutex, counts, result)
 
     expect(result).to.deep.equal([
@@ -196,9 +200,16 @@ describe('mortice', () => {
 
     const controller = new AbortController()
 
-    void lock('write', mutex, counts, result, 500)
-    void lock('write', mutex, counts, result, 500, controller.signal).catch(() => {})
-    void lock('write', mutex, counts, result, 500)
+    void lock('write', mutex, counts, result, {
+      timeout: 500
+    })
+    void lock('write', mutex, counts, result, {
+      timeout: 500,
+      signal: controller.signal
+    }).catch(() => {})
+    void lock('write', mutex, counts, result, {
+      timeout: 500
+    })
 
     expect(mutex.queue?.size).to.equal(3)
     controller.abort()

@@ -86,4 +86,24 @@ describe('cluster', () => {
       'write 3 complete'
     ])
   })
+
+  it('finalizes a lock across a cluster', async () => {
+    const output = await exec('node', ['dist/test/fixtures/cluster-finalize.js'], {
+      stderr: process.stderr
+    })
+    const result = JSON.parse(output.stdout)
+
+    expect(result).to.deep.equal([
+      'write 1 waiting',
+      'write 2 waiting',
+      'write 3 waiting',
+      'write 1 start',
+      'write 1 complete',
+      'write 2 start',
+      'write 2 complete',
+      'write 3 start',
+      'write 3 complete',
+      'write 3 finalize'
+    ])
+  })
 })

@@ -127,4 +127,31 @@ describe('webworkers', function () {
       'write 3 complete'
     ])
   })
+
+  it('finalizes a lock across a cluster', async () => {
+    const mutex2 = mortice()
+
+    if (mutex !== mutex2) {
+      throw new Error('Mutex was different')
+    }
+
+    await expect(runWorker('dist/worker-finalize.js')).to.eventually.deep.equal([
+      'write 1 waiting',
+      'write 2 waiting',
+      'write 3 waiting',
+      'write 1 start',
+      'write 1 complete',
+      'write 2 start',
+      'write 2 complete',
+      'write 3 start',
+      'write 3 complete',
+      'write 3 finalize'
+    ])
+
+    const mutex3 = mortice()
+
+    if (mutex === mutex3) {
+      throw new Error('Mutex was not different')
+    }
+  })
 })

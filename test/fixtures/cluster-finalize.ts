@@ -11,9 +11,22 @@ async function run (): Promise<void> {
   const result: string[] = []
 
   if (cluster.isPrimary) {
+    const mutex2 = mortice()
+
+    if (mutex !== mutex2) {
+      throw new Error('Mutex was different')
+    }
+
     cluster.on('message', (worker, message) => {
       if (message.type === 'done') {
         worker.kill()
+
+        const mutex3 = mortice()
+
+        if (mutex === mutex3) {
+          throw new Error('Mutex was not different')
+        }
+
         console.info(JSON.stringify(message.result)) // eslint-disable-line no-console
       }
     })
@@ -28,11 +41,11 @@ async function run (): Promise<void> {
         timeout: 500
       }),
       lock('write', mutex, counts, result, {
-        timeout: 500,
-        signal: controller.signal
-      }).catch(() => {}),
-      lock('write', mutex, counts, result, {
         timeout: 500
+      }),
+      lock('write', mutex, counts, result, {
+        timeout: 500,
+        finalize: true
       })
     ]
 

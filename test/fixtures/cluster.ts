@@ -24,7 +24,9 @@ async function run (): Promise<void> {
     void lock('write', mutex, counts, result)
     void lock('read', mutex, counts, result)
     void lock('read', mutex, counts, result)
-    void lock('read', mutex, counts, result, 500)
+    void lock('read', mutex, counts, result, {
+      timeout: 500
+    })
     void lock('write', mutex, counts, result)
     await lock('read', mutex, counts, result)
 
