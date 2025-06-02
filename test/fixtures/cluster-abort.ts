@@ -3,9 +3,7 @@ import mortice from '../../src/index.js'
 import { lock } from './lock.js'
 
 async function run (): Promise<void> {
-  const mutex = mortice({
-    singleProcess: true
-  })
+  const mutex = mortice()
   const counts = {
     read: 0,
     write: 0
@@ -22,15 +20,25 @@ async function run (): Promise<void> {
 
     cluster.fork()
   } else {
-    // queue up read/write requests, the third read should block the second write
-    void lock('write', mutex, counts, result)
-    void lock('read', mutex, counts, result)
-    void lock('read', mutex, counts, result)
-    void lock('read', mutex, counts, result, {
-      timeout: 500
-    })
-    void lock('write', mutex, counts, result)
-    await lock('read', mutex, counts, result)
+    const controller = new AbortController()
+
+    // queue up requests, the second should abort and the third should continue
+    const p = [
+      lock('write', mutex, counts, result, {
+        timeout: 500
+      }),
+      lock('write', mutex, counts, result, {
+        timeout: 500,
+        signal: controller.signal
+      }).catch(() => {}),
+      lock('write', mutex, counts, result, {
+        timeout: 500
+      })
+    ]
+
+    controller.abort()
+
+    await Promise.all(p)
 
     // @ts-expect-error only available in worker threads
     process.send({ type: 'done', result })

@@ -89,7 +89,9 @@ read 3
 
 ## Browser
 
-Because there's no global way to evesdrop on messages sent by Web Workers, please pass all created Web Workers to the [`observable-webworkers`](https://npmjs.org/package/observable-webworkers) module:
+Because there's no global way to eavesdrop on messages sent by Web Workers,
+please pass all created Web Workers to the [`observable-webworkers`](https://npmjs.org/package/observable-webworkers)
+module:
 
 ```javascript
 // main.js
@@ -118,6 +120,24 @@ release()
 release = await mutex.writeLock()
 // write something
 release()
+```
+
+## Clean up
+
+Mutexes are stored globally reference by name, this is so you can obtain the
+same lock from different contexts, including workers.
+
+When a mutex is no longer required, the `.finalize` function should be called
+to remove any internal references to it.
+
+```javascript
+import mortice from 'mortice'
+
+const mutex = mortice()
+
+// ...some time later
+
+mutex.finalize()
 ```
 
 # Install

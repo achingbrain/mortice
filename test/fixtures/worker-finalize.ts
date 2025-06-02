@@ -9,14 +9,25 @@ async function run (): Promise<string[]> {
   }
   const result: string[] = []
 
-  void lock('write', mutex, counts, result)
-  void lock('read', mutex, counts, result)
-  void lock('read', mutex, counts, result)
-  void lock('read', mutex, counts, result, {
-    timeout: 500
-  })
-  void lock('write', mutex, counts, result)
-  await lock('read', mutex, counts, result)
+  const controller = new AbortController()
+
+  // queue up requests, the second should abort and the third should continue
+  const p = [
+    lock('write', mutex, counts, result, {
+      timeout: 500
+    }),
+    lock('write', mutex, counts, result, {
+      timeout: 500
+    }).catch(() => {}),
+    lock('write', mutex, counts, result, {
+      timeout: 500,
+      finalize: true
+    })
+  ]
+
+  controller.abort()
+
+  await Promise.all(p)
 
   return result
 }
