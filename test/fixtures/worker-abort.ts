@@ -27,9 +27,9 @@ async function run (): Promise<string[]> {
     })
   ]
 
-  // wait for first write to start, then abort controller
+  // wait for first write to delay, then abort controller
   while (true) {
-    if (result.includes('write 1 start')) {
+    if (result.includes('write 1 delay 500ms')) {
       controller.abort()
       break
     }
