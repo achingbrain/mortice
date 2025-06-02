@@ -83,6 +83,7 @@ describe('worker threads', function () {
       'read 2 start',
       'read 2 complete',
       'read 3 start',
+      'read 3 delay 500ms',
       'read 3 complete',
       'write 2 start',
       'write 2 complete',
@@ -106,6 +107,7 @@ describe('worker threads', function () {
       'read 2 start',
       'read 2 complete',
       'read 3 start',
+      'read 3 delay 500ms',
       'read 3 complete',
       'write 2 start',
       'write 2 complete',
@@ -120,9 +122,11 @@ describe('worker threads', function () {
       'write 2 waiting',
       'write 3 waiting',
       'write 1 start',
+      'write 1 delay 500ms',
       'write 2 error The operation was aborted',
       'write 1 complete',
       'write 3 start',
+      'write 3 delay 500ms',
       'write 3 complete'
     ])
   })
@@ -139,10 +143,13 @@ describe('worker threads', function () {
       'write 2 waiting',
       'write 3 waiting',
       'write 1 start',
+      'write 1 delay 500ms',
       'write 1 complete',
       'write 2 start',
+      'write 2 delay 500ms',
       'write 2 complete',
       'write 3 start',
+      'write 3 delay 500ms',
       'write 3 complete',
       'write 3 finalize'
     ])

@@ -24,6 +24,7 @@ export async function lock (type: 'read' | 'write', mutex: Mortice, counts: Coun
     result.push(`${type} ${index} start`)
 
     if (options.timeout != null && options.timeout > 0) {
+      result.push(`${type} ${index} delay ${options.timeout}ms`)
       await delay(options.timeout)
     }
 
