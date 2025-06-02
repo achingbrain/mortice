@@ -27,9 +27,15 @@ async function run (): Promise<string[]> {
     })
   ]
 
-  await delay(100)
+  // wait for first write to start, then abort controller
+  while (true) {
+    if (result.includes('write 1 start')) {
+      controller.abort()
+      break
+    }
 
-  controller.abort()
+    await delay(10)
+  }
 
   await Promise.all(p)
 
