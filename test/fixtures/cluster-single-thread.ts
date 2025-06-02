@@ -1,4 +1,4 @@
-import cluster from 'cluster'
+import cluster from 'node:cluster'
 import mortice from '../../src/index.js'
 import { lock } from './lock.js'
 

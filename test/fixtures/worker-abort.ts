@@ -1,5 +1,6 @@
 import mortice from '../../src/index.js'
 import { lock } from './lock.js'
+import { postMessage } from './worker-post-message.ts'
 
 async function run (): Promise<string[]> {
   const mutex = mortice()
@@ -33,12 +34,12 @@ async function run (): Promise<string[]> {
 }
 
 run().then((result: string[] = []) => {
-  globalThis.postMessage({
+  postMessage({
     type: 'done',
     result
   })
 }, err => {
-  globalThis.postMessage({
+  postMessage({
     type: 'error',
     error: {
       message: err.message,

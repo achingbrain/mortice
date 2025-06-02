@@ -159,8 +159,10 @@
     "wherearewe": "^2.0.1"
   },
   "browser": {
-    "cluster": false,
+    "node:cluster": false,
+    "node:worker_threads": false,
     "./dist/src/node.js": "./dist/src/browser.js",
-    "./src/node.js": "./src/browser.js"
+    "./src/node.js": "./src/browser.js",
+    "./test/fixtures/worker-post-message.ts": "./test/fixtures/worker-post-message.browser.ts"
   }
 }
