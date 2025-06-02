@@ -105,6 +105,27 @@ const mutex = mortice()
 mutex.finalize()
 ```
 
+## Auto clean up
+
+If your app generates a lot of short-lived mutexes and you want to clean them
+up after the last lock has been released, pass the `autoFinalize` option to
+mortice in the owning context:
+
+```ts
+import mortice from 'mortice'
+
+const mutex = mortice({
+  autoFinalize: true
+})
+
+const release = await mutex.readLock()
+// ...some time later
+
+release()
+
+// mutex will be freed soon after
+```
+
 # Install
 
 ```console

@@ -59,13 +59,19 @@ describe('worker threads', function () {
 
   // hold lock in main thread
   let mutex: Mortice
+  let autoMutex: Mortice
 
   beforeEach(() => {
     mutex = mortice()
+    autoMutex = mortice({
+      name: 'auto-finalize-mutex',
+      autoFinalize: true
+    })
   })
 
   afterEach(() => {
     mutex?.finalize()
+    autoMutex?.finalize()
   })
 
   it('execute locks in correct order', async () => {
@@ -157,6 +163,41 @@ describe('worker threads', function () {
     const mutex3 = mortice()
 
     if (mutex === mutex3) {
+      throw new Error('Mutex was not different')
+    }
+  })
+
+  it('auto-finalizes a lock across workers', async () => {
+    const mutex2 = mortice({
+      name: 'auto-finalize-mutex',
+      autoFinalize: true
+    })
+
+    if (autoMutex !== mutex2) {
+      throw new Error('Mutex was different')
+    }
+
+    await expect(runWorker('./dist/test/fixtures/worker-auto-finalize.js')).to.eventually.deep.equal([
+      'write 1 waiting',
+      'write 2 waiting',
+      'write 3 waiting',
+      'write 1 start',
+      'write 1 delay 500ms',
+      'write 1 complete',
+      'write 2 start',
+      'write 2 delay 500ms',
+      'write 2 complete',
+      'write 3 start',
+      'write 3 delay 500ms',
+      'write 3 complete'
+    ])
+
+    const mutex3 = mortice({
+      name: 'auto-finalize-mutex',
+      autoFinalize: true
+    })
+
+    if (autoMutex === mutex3) {
       throw new Error('Mutex was not different')
     }
   })
