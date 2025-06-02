@@ -1,3 +1,4 @@
+import delay from 'delay'
 import mortice from '../../src/index.js'
 import { lock } from './lock.js'
 import { postMessage } from './worker-post-message.js'
@@ -25,6 +26,8 @@ async function run (): Promise<string[]> {
       timeout: 500
     })
   ]
+
+  await delay(100)
 
   controller.abort()
 

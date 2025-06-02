@@ -114,7 +114,7 @@ describe('worker threads', function () {
     ])
   })
 
-  it('aborts a lock across a cluster', async () => {
+  it('aborts a lock across worker threads', async () => {
     await expect(runWorker('./dist/test/fixtures/worker-abort.js')).to.eventually.deep.equal([
       'write 1 waiting',
       'write 2 waiting',
@@ -127,7 +127,7 @@ describe('worker threads', function () {
     ])
   })
 
-  it('finalizes a lock across workers', async () => {
+  it('finalizes a lock across worker threads', async () => {
     const mutex2 = mortice()
 
     if (mutex !== mutex2) {

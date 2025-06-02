@@ -115,7 +115,7 @@ describe('webworkers', function () {
     ])
   })
 
-  it('aborts a lock across a cluster', async () => {
+  it('aborts a lock across workers', async () => {
     await expect(runWorker('dist/worker-abort.js')).to.eventually.deep.equal([
       'write 1 waiting',
       'write 2 waiting',
