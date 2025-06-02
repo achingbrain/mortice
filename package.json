@@ -148,19 +148,21 @@
   "dependencies": {
     "abort-error": "^1.0.0",
     "it-queue": "^1.1.0",
-    "main-event": "^1.0.0",
-    "observable-webworkers": "^2.0.1"
+    "main-event": "^1.0.0"
   },
   "devDependencies": {
     "aegir": "^47.0.15",
     "delay": "^6.0.0",
     "esbuild": "^0.25.4",
     "execa": "^9.5.3",
+    "observable-webworkers": "^2.0.1",
     "wherearewe": "^2.0.1"
   },
   "browser": {
-    "cluster": false,
+    "node:cluster": false,
+    "node:worker_threads": false,
     "./dist/src/node.js": "./dist/src/browser.js",
-    "./src/node.js": "./src/browser.js"
+    "./src/node.js": "./src/browser.js",
+    "./test/fixtures/worker-post-message.js": "./test/fixtures/worker-post-message.browser.js"
   }
 }

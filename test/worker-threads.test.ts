@@ -1,8 +1,8 @@
+import { Worker } from 'node:worker_threads'
 import { expect } from 'aegir/chai'
-import observe from 'observable-webworkers'
+import { isNode, isElectronMain } from 'wherearewe'
 import mortice from '../src/index.js'
 import type { Mortice } from '../src/index.js'
-import type { WebworkerEventListener } from 'observable-webworkers'
 
 interface ResultEvent {
   type: 'done'
@@ -23,39 +23,38 @@ type WorkerEvent = ResultEvent | LogEvent | ErrorEvent
 
 async function runWorker (path: string): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
-    const worker = new Worker(path, {
-      type: 'module'
-    })
-    observe(worker)
+    const worker = new Worker(path)
 
-    const messageListener: WebworkerEventListener<WorkerEvent> = (worker, event) => {
-      if (event.data.type === 'log') {
-        console.info(event.data.message) // eslint-disable-line no-console
+    worker.on('message', (event: WorkerEvent) => {
+      if (event.type === 'log') {
+        console.info(event.message) // eslint-disable-line no-console
       }
 
-      if (event.data.type === 'error') {
+      if (event.type === 'error') {
         worker.terminate()
 
-        const err = new Error(event.data.error.message)
-        err.stack = event.data.error.stack
+        const err = new Error(event.error.message)
+        err.stack = event.error.stack
 
         reject(err)
       }
 
-      if (event.data.type === 'done') {
+      if (event.type === 'done') {
         worker.terminate()
-
-        resolve(event.data.result)
+          .then(() => {
+            resolve(event.result)
+          })
+          .catch(err => {
+            reject(err)
+          })
       }
-    }
-
-    observe.addEventListener('message', messageListener)
+    })
   })
 }
 
-describe('webworkers', function () {
-  if (globalThis.Worker == null) {
-    return it.skip('No worker support in environment')
+describe('worker threads', function () {
+  if (!isNode && !isElectronMain) {
+    return it.skip('cluster tests only run on node')
   }
 
   // hold lock in main thread
@@ -70,7 +69,7 @@ describe('webworkers', function () {
   })
 
   it('execute locks in correct order', async () => {
-    await expect(runWorker('dist/worker.js')).to.eventually.deep.equal([
+    await expect(runWorker('./dist/test/fixtures/worker.js')).to.eventually.deep.equal([
       'write 1 waiting',
       'read 1 waiting',
       'read 2 waiting',
@@ -94,7 +93,7 @@ describe('webworkers', function () {
   })
 
   it('execute locks in correct order in a single thread', async () => {
-    await expect(runWorker('dist/worker-single-thread.js')).to.eventually.deep.equal([
+    await expect(runWorker('./dist/test/fixtures/worker-single-thread.js')).to.eventually.deep.equal([
       'write 1 waiting',
       'read 1 waiting',
       'read 2 waiting',
@@ -117,8 +116,8 @@ describe('webworkers', function () {
     ])
   })
 
-  it('aborts a lock across workers', async () => {
-    await expect(runWorker('dist/worker-abort.js')).to.eventually.deep.equal([
+  it('aborts a lock across worker threads', async () => {
+    await expect(runWorker('./dist/test/fixtures/worker-abort.js')).to.eventually.deep.equal([
       'write 1 waiting',
       'write 2 waiting',
       'write 3 waiting',
@@ -132,14 +131,14 @@ describe('webworkers', function () {
     ])
   })
 
-  it('finalizes a lock across workers', async () => {
+  it('finalizes a lock across worker threads', async () => {
     const mutex2 = mortice()
 
     if (mutex !== mutex2) {
       throw new Error('Mutex was different')
     }
 
-    await expect(runWorker('dist/worker-finalize.js')).to.eventually.deep.equal([
+    await expect(runWorker('./dist/test/fixtures/worker-finalize.js')).to.eventually.deep.equal([
       'write 1 waiting',
       'write 2 waiting',
       'write 3 waiting',

@@ -24,6 +24,7 @@ export async function lock (type: 'read' | 'write', mutex: Mortice, counts: Coun
     result.push(`${type} ${index} start`)
 
     if (options.timeout != null && options.timeout > 0) {
+      result.push(`${type} ${index} delay ${options.timeout}ms`)
       await delay(options.timeout)
     }
 
@@ -34,6 +35,7 @@ export async function lock (type: 'read' | 'write', mutex: Mortice, counts: Coun
     if (options.finalize === true) {
       mutex.finalize()
       result.push(`${type} ${index} finalize`)
+      await delay(10)
     }
   } catch (err: any) {
     result.push(`${type} ${index} error ${err.message}`)

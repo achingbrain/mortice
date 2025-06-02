@@ -1,5 +1,7 @@
+import delay from 'delay'
 import mortice from '../../src/index.js'
 import { lock } from './lock.js'
+import { postMessage } from './worker-post-message.js'
 
 async function run (): Promise<string[]> {
   const mutex = mortice()
@@ -14,7 +16,7 @@ async function run (): Promise<string[]> {
   // queue up requests, the second should abort and the third should continue
   const p = [
     lock('write', mutex, counts, result, {
-      timeout: 500
+      timeout: 2_000
     }),
     lock('write', mutex, counts, result, {
       timeout: 500,
@@ -25,7 +27,15 @@ async function run (): Promise<string[]> {
     })
   ]
 
-  controller.abort()
+  // wait for first write to delay, then abort controller
+  while (true) {
+    if (result.includes('write 1 delay 2000ms')) {
+      controller.abort()
+      break
+    }
+
+    await delay(10)
+  }
 
   await Promise.all(p)
 
@@ -33,12 +43,12 @@ async function run (): Promise<string[]> {
 }
 
 run().then((result: string[] = []) => {
-  globalThis.postMessage({
+  postMessage({
     type: 'done',
     result
   })
 }, err => {
-  globalThis.postMessage({
+  postMessage({
     type: 'error',
     error: {
       message: err.message,

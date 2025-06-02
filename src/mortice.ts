@@ -7,12 +7,24 @@ import type { TypedEventTarget } from 'main-event'
 
 export type RequestType = 'requestReadLock' | 'requestWriteLock'
 export type AbortRequestType = 'abortReadLockRequest' | 'abortWriteLockRequest'
+export type FinalizeRequestType = 'finalizeRequest'
 
 export interface RequestEventData {
   name: string
   identifier: string
   handler(): Promise<void>
   onError(err: Error): void
+}
+
+export interface RequestEvent {
+  type: string
+  identifier: string
+  name: string,
+  error?: {
+    name: string
+    message: string
+    stack: string
+  }
 }
 
 export interface AbortEventData {
@@ -25,11 +37,11 @@ export interface FinalizeEventData {
 }
 
 export interface MorticeEvents {
-  requestReadLock: MessageEvent<RequestEventData>
-  abortReadLockRequest: MessageEvent<AbortEventData>
-  requestWriteLock: MessageEvent<RequestEventData>
-  abortWriteLockRequest: MessageEvent<AbortEventData>
-  finalizeRequest: MessageEvent<FinalizeEventData>
+  requestReadLock: CustomEvent<RequestEventData>
+  abortReadLockRequest: CustomEvent<AbortEventData>
+  requestWriteLock: CustomEvent<RequestEventData>
+  abortWriteLockRequest: CustomEvent<AbortEventData>
+  finalizeRequest: CustomEvent<FinalizeEventData>
 }
 
 const mutexes: Map<string, Mortice> = new Map()
@@ -47,9 +59,9 @@ export function getImplementation (opts: Required<MorticeOptions>): Mortice | Ty
       const emitter = implementation
 
       // we are master, set up worker requests
-      emitter.addEventListener('requestReadLock', (event: MessageEvent<RequestEventData>) => {
-        const mutexName = event.data.name
-        const identifier = event.data.identifier
+      emitter.addEventListener('requestReadLock', (event: CustomEvent<RequestEventData>) => {
+        const mutexName = event.detail.name
+        const identifier = event.detail.identifier
         const mutex = mutexes.get(mutexName)
 
         if (mutex == null) {
@@ -58,8 +70,8 @@ export function getImplementation (opts: Required<MorticeOptions>): Mortice | Ty
 
         const abortController = new AbortController()
 
-        const abortListener = (event: MessageEvent<AbortEventData>): void => {
-          if (event.data.name !== mutexName || event.data.identifier !== identifier) {
+        const abortListener = (event: CustomEvent<AbortEventData>): void => {
+          if (event.detail.name !== mutexName || event.detail.identifier !== identifier) {
             return
           }
 
@@ -72,22 +84,22 @@ export function getImplementation (opts: Required<MorticeOptions>): Mortice | Ty
           signal: abortController.signal
         })
           .then(async release => {
-            await event.data.handler()
+            await event.detail.handler()
               .finally(() => {
                 release()
               })
           })
           .catch(err => {
-            event.data.onError(err)
+            event.detail.onError(err)
           })
           .finally(() => {
             emitter.removeEventListener('abortReadLockRequest', abortListener)
           })
       })
 
-      emitter.addEventListener('requestWriteLock', (event: MessageEvent<RequestEventData>) => {
-        const mutexName = event.data.name
-        const identifier = event.data.identifier
+      emitter.addEventListener('requestWriteLock', (event: CustomEvent<RequestEventData>) => {
+        const mutexName = event.detail.name
+        const identifier = event.detail.identifier
         const mutex = mutexes.get(mutexName)
 
         if (mutex == null) {
@@ -96,8 +108,8 @@ export function getImplementation (opts: Required<MorticeOptions>): Mortice | Ty
 
         const abortController = new AbortController()
 
-        const abortListener = (event: MessageEvent<AbortEventData>): void => {
-          if (event.data.name !== mutexName || event.data.identifier !== identifier) {
+        const abortListener = (event: CustomEvent<AbortEventData>): void => {
+          if (event.detail.name !== mutexName || event.detail.identifier !== identifier) {
             return
           }
 
@@ -110,21 +122,21 @@ export function getImplementation (opts: Required<MorticeOptions>): Mortice | Ty
           signal: abortController.signal
         })
           .then(async release => {
-            await event.data.handler()
+            await event.detail.handler()
               .finally(() => {
                 release()
               })
           })
           .catch(err => {
-            event.data.onError(err)
+            event.detail.onError(err)
           })
           .finally(() => {
             emitter.removeEventListener('abortWriteLockRequest', abortListener)
           })
       })
 
-      emitter.addEventListener('finalizeRequest', (event: MessageEvent<FinalizeEventData>): void => {
-        const mutexName = event.data.name
+      emitter.addEventListener('finalizeRequest', (event: CustomEvent<FinalizeEventData>): void => {
+        const mutexName = event.detail.name
         const mutex = mutexes.get(mutexName)
 
         if (mutex == null) {

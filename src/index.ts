@@ -9,7 +9,7 @@
  *
  * @example
  *
- * ```javascript
+ * ```ts
  * import mortice from 'mortice'
  * import delay from 'delay'
  *
@@ -64,41 +64,6 @@
  *     write 1
  *     read 3
  *
- * ## Browser
- *
- * Because there's no global way to eavesdrop on messages sent by Web Workers,
- * please pass all created Web Workers to the [`observable-webworkers`](https://npmjs.org/package/observable-webworkers)
- * module:
- *
- * ```javascript
- * // main.js
- * import mortice from 'mortice'
- * import observe from 'observable-webworkers'
- *
- * // create our lock on the main thread, it will be held here
- * const mutex = mortice()
- *
- * const worker = new Worker('worker.js')
- *
- * observe(worker)
- * ```
- *
- * ```javascript
- * // worker.js
- * import mortice from 'mortice'
- * import delay from 'delay'
- *
- * const mutex = mortice()
- *
- * let release = await mutex.readLock()
- * // read something
- * release()
- *
- * release = await mutex.writeLock()
- * // write something
- * release()
- * ```
- *
  * ## Clean up
  *
  * Mutexes are stored globally reference by name, this is so you can obtain the
@@ -107,7 +72,7 @@
  * When a mutex is no longer required, the `.finalize` function should be called
  * to remove any internal references to it.
  *
- * ```javascript
+ * ```ts
  * import mortice from 'mortice'
  *
  * const mutex = mortice()

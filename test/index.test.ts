@@ -71,6 +71,7 @@ describe('mortice', () => {
       'read 2 start',
       'read 2 complete',
       'read 3 start',
+      'read 3 delay 500ms',
       'read 3 complete',
       'write 2 start',
       'write 2 complete',
@@ -97,6 +98,7 @@ describe('mortice', () => {
       'read 1 waiting',
       'write 1 waiting',
       'read 1 start',
+      'read 1 delay 500ms',
       'read 1 complete',
       'write 1 start',
       'write 1 complete'

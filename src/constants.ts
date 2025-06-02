@@ -11,3 +11,9 @@ export const MASTER_GRANT_WRITE_LOCK = 'lock:master:grant-write'
 export const MASTER_WRITE_LOCK_ERROR = 'lock:master:error-write'
 
 export const WORKER_FINALIZE = 'lock:worker:finalize'
+
+export const BROADCAST_CHANNEL_NAME = 'mortice'
+
+export const defaultOptions = {
+  singleProcess: false
+}
