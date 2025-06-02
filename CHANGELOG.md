@@ -1,3 +1,9 @@
+## [3.2.1](https://github.com/achingbrain/mortice/compare/v3.2.0...v3.2.1) (2025-06-02)
+
+### Bug Fixes
+
+* switch to BroadcastChannel ([#97](https://github.com/achingbrain/mortice/issues/97)) ([5f0f1e7](https://github.com/achingbrain/mortice/commit/5f0f1e7a73acf2e5f7004f9ed83ebbb556ac138f)), closes [#67](https://github.com/achingbrain/mortice/issues/67)
+
 ## [3.2.0](https://github.com/achingbrain/mortice/compare/v3.1.0...v3.2.0) (2025-06-02)
 
 ### Features
