@@ -1,3 +1,9 @@
+## [3.2.0](https://github.com/achingbrain/mortice/compare/v3.1.0...v3.2.0) (2025-06-02)
+
+### Features
+
+* expose queue, add finalize method ([#96](https://github.com/achingbrain/mortice/issues/96)) ([b0daf48](https://github.com/achingbrain/mortice/commit/b0daf4845aa1af4d026ac92fe1fc875952d93dcb))
+
 ## [3.1.0](https://github.com/achingbrain/mortice/compare/v3.0.6...v3.1.0) (2025-05-28)
 
 ### Features
