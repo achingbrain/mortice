@@ -16,7 +16,7 @@ async function run (): Promise<string[]> {
   // queue up requests, the second should abort and the third should continue
   const p = [
     lock('write', mutex, counts, result, {
-      timeout: 500
+      timeout: 2_000
     }),
     lock('write', mutex, counts, result, {
       timeout: 500,
@@ -29,7 +29,7 @@ async function run (): Promise<string[]> {
 
   // wait for first write to delay, then abort controller
   while (true) {
-    if (result.includes('write 1 delay 500ms')) {
+    if (result.includes('write 1 delay 2000ms')) {
       controller.abort()
       break
     }

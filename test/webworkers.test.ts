@@ -123,7 +123,7 @@ describe('webworkers', function () {
       'write 2 waiting',
       'write 3 waiting',
       'write 1 start',
-      'write 1 delay 500ms',
+      'write 1 delay 2000ms',
       'write 2 error The operation was aborted',
       'write 1 complete',
       'write 3 start',
