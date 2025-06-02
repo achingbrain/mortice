@@ -5,6 +5,40 @@ import { lock } from './fixtures/lock.js'
 import type { Mortice } from '../src/index.js'
 
 describe('mortice', () => {
+  it('executes write', async () => {
+    const mutex = mortice()
+    const result: string[] = []
+    const counts = {
+      read: 0,
+      write: 0
+    }
+
+    await lock('write', mutex, counts, result)
+
+    expect(result).to.deep.equal([
+      'write 1 waiting',
+      'write 1 start',
+      'write 1 complete'
+    ])
+  })
+
+  it('executes read', async () => {
+    const mutex = mortice()
+    const result: string[] = []
+    const counts = {
+      read: 0,
+      write: 0
+    }
+
+    await lock('read', mutex, counts, result)
+
+    expect(result).to.deep.equal([
+      'read 1 waiting',
+      'read 1 start',
+      'read 1 complete'
+    ])
+  })
+
   it('executes locks in correct order', async () => {
     const mutex = mortice()
     const result: string[] = []
@@ -147,5 +181,49 @@ describe('mortice', () => {
       signal: AbortSignal.timeout(100)
     })).to.eventually.be.rejected
       .with.property('name', 'AbortError')
+  })
+
+  it('removes aborted lock requests that are queued', async () => {
+    const mutex = mortice({
+      name: 'remove-lock-request'
+    })
+
+    const result: string[] = []
+    const counts = {
+      read: 0,
+      write: 0
+    }
+
+    const controller = new AbortController()
+
+    void lock('write', mutex, counts, result, 500)
+    void lock('write', mutex, counts, result, 500, controller.signal).catch(() => {})
+    void lock('write', mutex, counts, result, 500)
+
+    expect(mutex.queue?.size).to.equal(3)
+    controller.abort()
+    // not long enough for the first lock to be released
+    await delay(10)
+    expect(mutex.queue?.size).to.equal(2)
+  })
+
+  it('removes mutex from the global state', () => {
+    const name = 'clean-up-mutex'
+    const mutex1 = mortice({
+      name
+    })
+    const mutex2 = mortice({
+      name
+    })
+
+    expect(mutex1).to.equal(mutex2)
+
+    mutex1.finalize()
+
+    const mutex3 = mortice({
+      name
+    })
+
+    expect(mutex1).to.not.equal(mutex3)
   })
 })

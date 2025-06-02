@@ -1,5 +1,7 @@
 import { expect } from 'aegir/chai'
 import observe from 'observable-webworkers'
+import mortice from '../src/index.js'
+import type { Mortice } from '../src/index.js'
 import type { WebworkerEventListener } from 'observable-webworkers'
 
 interface ResultEvent {
@@ -56,6 +58,17 @@ describe('webworkers', function () {
     return it.skip('No worker support in environment')
   }
 
+  // hold lock in main thread
+  let mutex: Mortice
+
+  beforeEach(() => {
+    mutex = mortice()
+  })
+
+  afterEach(() => {
+    mutex?.finalize()
+  })
+
   it('execute locks in correct order', async () => {
     await expect(runWorker('dist/worker.js')).to.eventually.deep.equal([
       'write 1 waiting',
@@ -80,7 +93,7 @@ describe('webworkers', function () {
   })
 
   it('execute locks in correct order in a single thread', async () => {
-    await expect(runWorker('dist/worker.js')).to.eventually.deep.equal([
+    await expect(runWorker('dist/worker-single-thread.js')).to.eventually.deep.equal([
       'write 1 waiting',
       'read 1 waiting',
       'read 2 waiting',
@@ -99,6 +112,19 @@ describe('webworkers', function () {
       'write 2 complete',
       'read 4 start',
       'read 4 complete'
+    ])
+  })
+
+  it('aborts a lock across a cluster', async () => {
+    await expect(runWorker('dist/worker-abort.js')).to.eventually.deep.equal([
+      'write 1 waiting',
+      'write 2 waiting',
+      'write 3 waiting',
+      'write 1 start',
+      'write 2 error The operation was aborted',
+      'write 1 complete',
+      'write 3 start',
+      'write 3 complete'
     ])
   })
 })

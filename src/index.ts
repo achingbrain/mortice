@@ -98,11 +98,28 @@
  * // write something
  * release()
  * ```
+ *
+ * ## Clean up
+ *
+ * Mutexes are stored globally reference by name, this is so you can obtain the
+ * same lock from different contexts, including workers.
+ *
+ * When a mutex is no longer required, the `.finalize` function should be called
+ * to remove any internal references to it.
+ *
+ * ```javascript
+ * import mortice from 'mortice'
+ *
+ * const mutex = mortice()
+ *
+ * // ...some time later
+ *
+ * mutex.finalize()
+ * ```
  */
 
-import { AbortError } from 'abort-error'
-import PQueue from 'p-queue'
-import impl from './node.js'
+import { Queue } from 'it-queue'
+import { createMutex } from './mortice.ts'
 import type { AbortOptions } from 'abort-error'
 
 export interface MorticeOptions {
@@ -131,106 +148,34 @@ export interface MorticeOptions {
 }
 
 export interface Mortice {
+  /**
+   * Acquire a read lock. Multiple reads will occur simultaneously up to the
+   * concurrency limit passed to the constructor.
+   */
   readLock(options?: AbortOptions): Promise<Release>
+
+  /**
+   * Acquire a write lock. The write lock will wait for any in-flight reads to
+   * complete, then prevent any further reads or writes until the lock is
+   * released.
+   */
   writeLock(options?: AbortOptions): Promise<Release>
+
+  /**
+   * Removes this mutex from the global state, after invoking this method it
+   * cannot be used any more.
+   */
+  finalize(): void
+
+  /**
+   * If this is the main thread, the state of the read/write queue may be
+   * inspected here
+   */
+  queue?: Queue
 }
 
 export interface Release {
   (): void
-}
-
-const mutexes: Record<string, Mortice> = {}
-let implementation: any
-
-async function createReleaseable (queue: PQueue, options?: AbortOptions): Promise<Release> {
-  let res: (release: Release) => void
-  let rej: (err: Error) => void
-
-  const p = new Promise<Release>((resolve, reject) => {
-    res = resolve
-    rej = reject
-  })
-
-  const listener = (): void => {
-    rej(new AbortError())
-  }
-
-  options?.signal?.addEventListener('abort', listener, {
-    once: true
-  })
-
-  queue.add(async () => {
-    await new Promise<void>((resolve) => {
-      res(() => {
-        options?.signal?.removeEventListener('abort', listener)
-        resolve()
-      })
-    })
-  }, {
-    signal: options?.signal
-  })
-    .catch((err) => {
-      rej(err)
-    })
-
-  return p
-}
-
-const createMutex = (name: string, options: Required<MorticeOptions>): Mortice => {
-  if (implementation.isWorker === true) {
-    return {
-      readLock: implementation.readLock(name, options),
-      writeLock: implementation.writeLock(name, options)
-    }
-  }
-
-  const masterQueue = new PQueue({ concurrency: 1 })
-  let readQueue: PQueue | null
-
-  return {
-    async readLock (opts?: AbortOptions) {
-      // If there's already a read queue, just add the task to it
-      if (readQueue != null) {
-        return createReleaseable(readQueue, opts)
-      }
-
-      // Create a new read queue
-      readQueue = new PQueue({
-        concurrency: options.concurrency,
-        autoStart: false
-      })
-      const localReadQueue = readQueue
-
-      // Add the task to the read queue
-      const readPromise = createReleaseable(readQueue, opts)
-
-      void masterQueue.add(async () => {
-        // Start the task only once the master queue has completed processing
-        // any previous tasks
-        localReadQueue.start()
-
-        // Once all the tasks in the read queue have completed, remove it so
-        // that the next read lock will occur after any write locks that were
-        // started in the interim
-        await localReadQueue.onIdle()
-          .then(() => {
-            if (readQueue === localReadQueue) {
-              readQueue = null
-            }
-          })
-      })
-
-      return readPromise
-    },
-    async writeLock (opts?: AbortOptions) {
-      // Remove the read queue reference, so that any later read locks will be
-      // added to a new queue that starts after this write lock has been
-      // released
-      readQueue = null
-
-      return createReleaseable(masterQueue, opts)
-    }
-  }
 }
 
 const defaultOptions = {
@@ -239,88 +184,8 @@ const defaultOptions = {
   singleProcess: false
 }
 
-interface EventData {
-  name: string
-  handler(): Promise<void>
-}
-
 export default function createMortice (options?: MorticeOptions): Mortice {
   const opts: Required<MorticeOptions> = Object.assign({}, defaultOptions, options)
 
-  if (implementation == null) {
-    implementation = impl(opts)
-
-    if (implementation.isWorker !== true) {
-      // we are master, set up worker requests
-      implementation.addEventListener('requestReadLock', (event: MessageEvent<EventData>) => {
-        const mutexName = event.data.name
-
-        if (mutexes[mutexName] == null) {
-          return
-        }
-
-        const abortController = new AbortController()
-
-        const abortListener = (event: MessageEvent<EventData>): void => {
-          if (event.data.name !== mutexName) {
-            return
-          }
-
-          abortController.abort()
-        }
-
-        implementation.addEventListener('abortReadLockRequest', abortListener)
-
-        void mutexes[mutexName].readLock({
-          signal: abortController.signal
-        })
-          .then(async release => event.data.handler()
-            .finally(() => {
-              release()
-            })
-          )
-          .finally(() => {
-            implementation.removeEventListener('abortReadLockRequest', abortListener)
-          })
-      })
-
-      implementation.addEventListener('requestWriteLock', async (event: MessageEvent<EventData>) => {
-        const mutexName = event.data.name
-
-        if (mutexes[mutexName] == null) {
-          return
-        }
-
-        const abortController = new AbortController()
-
-        const abortListener = (event: MessageEvent<EventData>): void => {
-          if (event.data.name !== mutexName) {
-            return
-          }
-
-          abortController.abort()
-        }
-
-        implementation.addEventListener('abortWriteLockRequest', abortListener)
-
-        void mutexes[event.data.name].writeLock({
-          signal: abortController.signal
-        })
-          .then(async release => event.data.handler()
-            .finally(() => {
-              release()
-            })
-          )
-          .finally(() => {
-            implementation.removeEventListener('abortWriteLockRequest', abortListener)
-          })
-      })
-    }
-  }
-
-  if (mutexes[opts.name] == null) {
-    mutexes[opts.name] = createMutex(opts.name, opts)
-  }
-
-  return mutexes[opts.name]
+  return createMutex(opts.name, opts)
 }

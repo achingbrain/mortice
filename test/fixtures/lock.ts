@@ -6,21 +6,27 @@ export interface Counts {
   write: number
 }
 
-export async function lock (type: 'read' | 'write', muxex: Mortice, counts: Counts, result: string[], timeout = 0): Promise<void> {
+export async function lock (type: 'read' | 'write', mutex: Mortice, counts: Counts, result: string[], timeout = 0, signal?: AbortSignal): Promise<void> {
   counts[type]++
   const index = counts[type]
 
   result.push(`${type} ${index} waiting`)
 
-  const release = await muxex[`${type}Lock`]()
+  try {
+    const release = await mutex[`${type}Lock`]({
+      signal
+    })
 
-  result.push(`${type} ${index} start`)
+    result.push(`${type} ${index} start`)
 
-  if (timeout > 0) {
-    await delay(timeout)
+    if (timeout > 0) {
+      await delay(timeout)
+    }
+
+    result.push(`${type} ${index} complete`)
+
+    release()
+  } catch (err: any) {
+    result.push(`${type} ${index} error ${err.message}`)
   }
-
-  result.push(`${type} ${index} complete`)
-
-  release()
 }

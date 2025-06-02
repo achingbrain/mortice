@@ -11,6 +11,11 @@ async function main () {
       entryPoints: ['./test/fixtures/worker-single-thread.ts'],
       bundle: true,
       outfile: './dist/worker-single-thread.js'
+    }),
+    build({
+      entryPoints: ['./test/fixtures/worker-abort.ts'],
+      bundle: true,
+      outfile: './dist/worker-abort.js'
     })
   ])
 }
