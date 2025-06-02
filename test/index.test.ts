@@ -1,5 +1,6 @@
 import { expect } from 'aegir/chai'
 import delay from 'delay'
+import { pEvent } from 'p-event'
 import mortice from '../src/index.js'
 import { lock } from './fixtures/lock.js'
 import type { Mortice } from '../src/index.js'
@@ -232,6 +233,35 @@ describe('mortice', () => {
     expect(mutex1).to.equal(mutex2)
 
     mutex1.finalize()
+
+    const mutex3 = mortice({
+      name
+    })
+
+    expect(mutex1).to.not.equal(mutex3)
+  })
+
+  it('removes mutex from the global state automatically', async () => {
+    const name = 'auto-clean-up-mutex'
+    const mutex1 = mortice({
+      name,
+      autoFinalize: true
+    })
+    const mutex2 = mortice({
+      name
+    })
+
+    expect(mutex1).to.equal(mutex2)
+
+    const release = await mutex1.readLock()
+    await delay(100) // simulate work
+    release()
+
+    if (mutex1.queue == null) {
+      throw new Error('No queue')
+    }
+
+    await pEvent(mutex1.queue, 'idle')
 
     const mutex3 = mortice({
       name

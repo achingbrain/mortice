@@ -81,6 +81,27 @@
  *
  * mutex.finalize()
  * ```
+ *
+ * ## Auto clean up
+ *
+ * If your app generates a lot of short-lived mutexes and you want to clean them
+ * up after the last lock has been released, pass the `autoFinalize` option to
+ * mortice in the owning context:
+ *
+ ```ts
+ * import mortice from 'mortice'
+ *
+ * const mutex = mortice({
+ *   autoFinalize: true
+ * })
+ *
+ * const release = await mutex.readLock()
+ * // ...some time later
+ *
+ * release()
+ *
+ * // mutex will be freed soon after
+ * ```
  */
 
 import { Queue } from 'it-queue'
@@ -110,6 +131,14 @@ export interface MorticeOptions {
    * @default false
    */
   singleProcess?: boolean
+
+  /**
+   * If true, the lock will be finalized after the last reader/writer releases
+   * it.
+   *
+   * @default false
+   */
+  autoFinalize?: boolean
 }
 
 export interface Mortice {
@@ -146,7 +175,8 @@ export interface Release {
 const defaultOptions = {
   name: 'lock',
   concurrency: Infinity,
-  singleProcess: false
+  singleProcess: false,
+  autoFinalize: false
 }
 
 export default function createMortice (options?: MorticeOptions): Mortice {

@@ -258,5 +258,14 @@ export const createMutex = (name: string, options: Required<MorticeOptions>): Mo
 
   mutexes.set(name, mutex)
 
+  // if requested, finalize the lock once the last lock holder has released it
+  if (options.autoFinalize === true) {
+    masterQueue.addEventListener('idle', () => {
+      mutex.finalize()
+    }, {
+      once: true
+    })
+  }
+
   return mutex
 }
