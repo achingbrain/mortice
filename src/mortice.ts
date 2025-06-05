@@ -194,6 +194,9 @@ export const createMutex = (name: string, options: Required<MorticeOptions>): Mo
 
   const implementation = getImplementation(options)
 
+  // a Mortice instance will be returned if we are a worker, otherwise if we are
+  // primary an event target will be returned that fires events when workers
+  // request a lock
   if (isMortice(implementation)) {
     mutex = implementation
 
