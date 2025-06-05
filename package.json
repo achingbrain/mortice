@@ -165,5 +165,9 @@
     "./dist/src/node.js": "./dist/src/browser.js",
     "./src/node.js": "./src/browser.js",
     "./test/fixtures/worker-post-message.js": "./test/fixtures/worker-post-message.browser.js"
+  },
+  "react-native": {
+    "./dist/src/node.js": "./dist/src/react-native.js",
+    "./src/node.js": "./src/react-native.js"
   }
 }

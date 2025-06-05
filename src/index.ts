@@ -102,6 +102,14 @@
  *
  * // mutex will be freed soon after
  * ```
+ *
+ * ## React native support
+ *
+ * This module should run on react native but it only supports single-process
+ * concurrency as it's not clear to the author (disclaimer - not a react native
+ * dev) what the officially supported process concurrency model is.
+ *
+ * Please open an issue if this is a feature you would like to see added.
  */
 
 import { Queue } from 'it-queue'
