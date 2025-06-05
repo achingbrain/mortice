@@ -1,3 +1,9 @@
+## [3.3.1](https://github.com/achingbrain/mortice/compare/v3.3.0...v3.3.1) (2025-06-05)
+
+### Bug Fixes
+
+* react native support ([#99](https://github.com/achingbrain/mortice/issues/99)) ([9b49025](https://github.com/achingbrain/mortice/commit/9b490251f8d76796ce1e9366dcf62caf2b1f04f4))
+
 ## [3.3.0](https://github.com/achingbrain/mortice/compare/v3.2.1...v3.3.0) (2025-06-05)
 
 ### Features
