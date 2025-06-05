@@ -1,3 +1,9 @@
+## [3.3.0](https://github.com/achingbrain/mortice/compare/v3.2.1...v3.3.0) (2025-06-05)
+
+### Features
+
+* add auto finalize ([#98](https://github.com/achingbrain/mortice/issues/98)) ([b827f80](https://github.com/achingbrain/mortice/commit/b827f80da59147c48b679493877b4bbba56f8c85))
+
 ## [3.2.1](https://github.com/achingbrain/mortice/compare/v3.2.0...v3.2.1) (2025-06-02)
 
 ### Bug Fixes
