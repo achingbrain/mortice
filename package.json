@@ -156,7 +156,7 @@
     "esbuild": "^0.25.4",
     "execa": "^9.5.3",
     "observable-webworkers": "^2.0.1",
-    "p-event": "^6.0.1",
+    "p-event": "^7.0.0",
     "wherearewe": "^2.0.1"
   },
   "browser": {
