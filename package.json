@@ -152,7 +152,7 @@
   },
   "devDependencies": {
     "aegir": "^47.0.15",
-    "delay": "^6.0.0",
+    "delay": "^7.0.0",
     "esbuild": "^0.25.4",
     "execa": "^9.5.3",
     "observable-webworkers": "^2.0.1",
